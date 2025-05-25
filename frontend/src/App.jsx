@@ -1,35 +1,56 @@
+// src/App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/HomePage';
 import Chat from './pages/ChatPage';
 import Login from './pages/LoginPage';
+import Profile from './pages/ProfilePage';
+import Settings from './pages/SettingsPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider } from './context/AuthContext';
+import Register from './pages/RegisterPage';
+import { ParallaxProvider } from 'react-scroll-parallax';
+
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <div className="App">
-          <Navbar />
-          <main className="pt-16 px-4">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/chat"
-                element={
-                  <ProtectedRoute>
-                    <Chat />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </main>
-        </div>
-      </AuthProvider>
-    </Router>
+        <ParallaxProvider>
+    <>
+      <Navbar />
+      <main className="pt-16 px-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+    </>
+    </ParallaxProvider>
+
   );
 }
 

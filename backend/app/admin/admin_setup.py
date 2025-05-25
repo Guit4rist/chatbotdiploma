@@ -2,9 +2,11 @@ from app.models.badge import Badge
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends
 from app.db.dependencies import get_db
+from app.admin import logs
 
 
 router = APIRouter()
+router.include_router(logs.router)
 
 @router.get("/admin/")
 def admin_home():

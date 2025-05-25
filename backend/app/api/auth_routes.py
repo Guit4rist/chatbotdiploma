@@ -24,7 +24,8 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)):
         username=user_data.username,
         email=user_data.email,
         hashed_password=hashed_pw,
-        language_level=user_data.language_level
+        language_level=user_data.language_level,
+        preferred_language=user_data.preferred_language
     )
     db.add(user)
     db.commit()

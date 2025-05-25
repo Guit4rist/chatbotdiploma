@@ -1,91 +1,130 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import {
-  Box,
-  Button,
-  Container,
-  TextField,
   Typography,
-  Alert,
+  TextField,
+  Button,
   Paper,
+  Stack,
+  Alert,
 } from '@mui/material';
-import axios from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import PageWrapper from '../components/layout/PageWrapper';
+import { motion } from 'framer-motion';
+
+const MotionPaper = motion(Paper);
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', password: '' });
-  const [error, setError] = useState('');
+  const [form, setForm] = useState({
+    username: '',
+    password: '',
+  });
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
-
+    setError(null);
     try {
-      const response = await axios.post(
-        '/login/',
-        new URLSearchParams({
-          username: form.username,
-          password: form.password,
-        }),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        }
-      );
-
-      const { access_token } = response.data;
-      localStorage.setItem('accessToken', access_token);
-
-      // Redirect to chat after login
+      const response = await axios.post('/login/', new URLSearchParams(form), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
+      const token = response.data.access_token;
+      localStorage.setItem('token', token);
       navigate('/chat');
     } catch (err) {
-      setError('Invalid username or password.');
+      setError('Invalid credentials. Please try again.');
     }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 10 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom>
+    <PageWrapper>
+      <MotionPaper
+        elevation={6}
+        initial={{ opacity: 0, y: 60 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        sx={{
+          p: 6,
+          maxWidth: 500,
+          mx: 'auto',
+          textAlign: 'center',
+          backgroundColor: '#1B263B',
+          borderRadius: 3,
+          color: '#E0E1DD',
+        }}
+      >
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
           Login
         </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          Welcome back! Log in to continue practicing.
+        </Typography>
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
+
         <form onSubmit={handleLogin}>
-          <TextField
-            fullWidth
-            label="Username"
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            margin="normal"
-            required
-          />
-          <Box sx={{ textAlign: 'center', mt: 3 }}>
-            <Button type="submit" variant="contained" color="primary" size="large">
-              Login
+          <Stack spacing={3}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Username"
+              name="username"
+              required
+              value={form.username}
+              onChange={handleChange}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            />
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Password"
+              name="password"
+              type="password"
+              required
+              value={form.password}
+              onChange={handleChange}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            />
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{
+                  backgroundColor: '#778DA9',
+                  color: '#fff',
+                  '&:hover': { backgroundColor: '#90A4C4' },
+                }}
+              >
+                Log In
+              </Button>
+            </motion.div>
+
+            <Button
+              variant="text"
+              fullWidth
+              onClick={() => navigate('/register')}
+              sx={{ color: '#E0E1DD' }}
+            >
+              Don&apos;t have an account? Register
             </Button>
-          </Box>
+          </Stack>
         </form>
-      </Paper>
-    </Container>
+      </MotionPaper>
+    </PageWrapper>
   );
 };
 

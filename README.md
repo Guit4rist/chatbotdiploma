@@ -14,7 +14,7 @@ This project is an educational platform that enables language learners to practi
 ## Tech Stack
 
 - **Backend**: FastAPI, PostgreSQL, SQLAlchemy
-- **Frontend**: React + MUI + Tailwind
+- **Frontend**: React + MUI
 - **AI**: OpenAI GPT integration
 
 ## Getting Started
