@@ -10,7 +10,7 @@ from app.services.auth import hash_password as get_password_hash
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.post("/", response_model=UserOut)
+@router.post("/users", response_model=UserOut)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter_by(username=user.username).first()
     if existing:

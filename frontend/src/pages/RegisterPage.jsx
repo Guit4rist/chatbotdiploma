@@ -37,7 +37,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setError(null);
     try {
-      await axios.post('/', form);
+      await axios.post('/users', form);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed');
