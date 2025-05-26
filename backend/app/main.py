@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.models.user import Base 
 from app.db.database import engine
 from app.api.router import router
-from app.models.conversation import conversation_history  
+from app.models.conversation import ConversationHistory 
 
 
 from app.config.limiter import limiter
