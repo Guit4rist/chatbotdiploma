@@ -1,21 +1,45 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
+
 
 class UserCreate(BaseModel):
     username: str
+    email: EmailStr
     password: str
     preferred_language: Optional[str] = "English"
+    language_level: Optional[str] = "Beginner"
+
 
 class UserUpdate(BaseModel):
     password: Optional[str]
     preferred_language: Optional[str]
+    language_level: Optional[str]
+    display_name: Optional[str]
+    avatar_url: Optional[str]
+    bio: Optional[str]
+    interface_language: Optional[str]
+    timezone: Optional[str]
+
 
 class UserOut(BaseModel):
     id: int
     username: str
-    current_xp: int
-    current_level: int
+    email: EmailStr
+    display_name: Optional[str]
+    avatar_url: Optional[str]
+    bio: Optional[str]
     preferred_language: Optional[str]
+    language_level: Optional[str]
+    current_level: Optional[str]
+    experience_points: int
+    total_sessions: int
+    total_messages: int
+    last_login: Optional[datetime]
+    interface_language: Optional[str]
+    timezone: Optional[str]
+    is_admin: bool
+    is_banned: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Pydantic V2 equivalent of `orm_mode = True`
