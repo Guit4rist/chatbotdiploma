@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
+from app.models.conversation import ConversationHistory, ChatSession
 
 Base = declarative_base()
 
@@ -30,9 +31,9 @@ class User(Base):
 
 
     # Relationships
-    conversations = relationship("ConversationHistory", back_populates="user")
-    chat_sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
-    conversation_history = relationship("ConversationHistory", back_populates="user", cascade="all, delete-orphan")
+    conversations = relationship(ConversationHistory, back_populates="user")
+    chat_sessions = relationship(ChatSession, back_populates="user", cascade="all, delete-orphan")
+    conversation_history = relationship(ConversationHistory, back_populates="user", cascade="all, delete-orphan")
 
     # NEW — Profile info
     display_name = Column(String, nullable=True)
