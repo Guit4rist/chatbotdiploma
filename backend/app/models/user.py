@@ -2,7 +2,6 @@
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from app.models.badge import UserBadge
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -27,7 +26,7 @@ class User(Base):
     # Gamification
     experience_points = Column(Integer, default=0)
     current_level = Column(String, default="Beginner")
-    badges = relationship("UserBadge", back_populates="user", cascade="all, delete-orphan")
+    #badges = relationship("UserBadge", back_populates="user", cascade="all, delete-orphan")
 
 
     # Relationships
