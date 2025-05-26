@@ -9,6 +9,11 @@ class UserCreate(BaseModel):
     password: str
     preferred_language: Optional[str] = "English"
     language_level: Optional[str] = "Beginner"
+    display_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    bio: Optional[str] = None
+    interface_language: Optional[str] = "en"
+    timezone: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -42,4 +47,4 @@ class UserOut(BaseModel):
     is_banned: bool
 
     class Config:
-        from_attributes = True  # Pydantic V2 equivalent of `orm_mode = True`
+        from_attributes = True  # Pydantic v2; use `orm_mode = True` if on v1
