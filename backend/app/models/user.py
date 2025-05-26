@@ -30,9 +30,8 @@ class User(Base):
 
 
     # Relationships
-    conversations = relationship(ConversationHistory, back_populates="user")
+    conversations = relationship("ConversationHistory", back_populates="user", cascade="all, delete-orphan")
     chat_sessions = relationship(ChatSession, back_populates="user", cascade="all, delete-orphan")
-    conversation_history = relationship(ConversationHistory, back_populates="user", cascade="all, delete-orphan")
 
     # NEW — Profile info
     display_name = Column(String, nullable=True)
