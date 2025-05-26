@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
-from backend.app.models.user_badge import Badge, UserBadge
+from app.models.badge import Badge, UserBadge
 
 # Define global XP thresholds with gamer-style level names
 LEVEL_THRESHOLDS = {
