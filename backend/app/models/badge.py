@@ -1,24 +1,18 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from app.db.database import Base
 
 class Badge(Base):
     __tablename__ = "badges"
-
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    name = Column(String, unique=True)
     description = Column(String)
-    icon = Column(String, nullable=True)  # URL or identifier for frontend
-    created_at = Column(DateTime, default=datetime.utcnow)
-
 
 class UserBadge(Base):
     __tablename__ = "user_badges"
-
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     badge_id = Column(Integer, ForeignKey("badges.id"))
-    awarded_at = Column(DateTime, default=datetime.utcnow)
 
+    user = relationship("User", back_populates="badges")
     badge = relationship("Badge")

@@ -2,6 +2,7 @@
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
+from app.models.badge import UserBadge
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
