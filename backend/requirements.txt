@@ -10,3 +10,4 @@ pydantic
 aiofiles
 python-multipart
 openai
+pydantic[email]
