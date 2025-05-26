@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.models.badge import Badge, UserBadge
 
 # Define global XP thresholds with gamer-style level names
 LEVEL_THRESHOLDS = {
@@ -67,16 +66,16 @@ def get_next_level_info(user: User) -> dict:
         "xp_needed": 0  # Already at max level
     }
 
-def award_badge_if_eligible(user: User, db: Session):
-    badges_to_award = []
+#def award_badge_if_eligible(user: User, db: Session):
+#    badges_to_award = []
 
-    # Example 1: Award for reaching 100 XP
-    if user.experience_points >= 100:
-        badge = db.query(Badge).filter(Badge.name == "First 100 XP").first()
-        if badge and not any(ub.badge_id == badge.id for ub in user.badges):
-            user_badge = UserBadge(user_id=user.id, badge_id=badge.id)
-            db.add(user_badge)
-            badges_to_award.append(badge.name)
-
-    db.commit()
-    return badges_to_award
+#    # Example 1: Award for reaching 100 XP
+#    if user.experience_points >= 100:
+#        badge = db.query(Badge).filter(Badge.name == "First 100 XP").first()
+#        if badge and not any(ub.badge_id == badge.id for ub in user.badges):
+ #           user_badge = UserBadge(user_id=user.id, badge_id=badge.id)
+ #           db.add(user_badge)
+  #          badges_to_award.append(badge.name)
+#
+ #   db.commit()
+ #   return badges_to_award
