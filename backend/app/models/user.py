@@ -1,12 +1,11 @@
 # app/models/user.py
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.models.conversation import ConversationHistory, ChatSession
+from app.db.database import Base
 
-Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
