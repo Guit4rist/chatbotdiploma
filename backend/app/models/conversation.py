@@ -26,5 +26,7 @@ class ConversationHistory(Base):
     role = Column(String)
     message = Column(Text)
     timestamp = Column(DateTime, default=datetime.utcnow)
+    user = relationship("User", back_populates="conversations")
+
 
     chat_session = relationship("ChatSession", back_populates="messages")
