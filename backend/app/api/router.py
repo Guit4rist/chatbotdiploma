@@ -2,7 +2,6 @@
 
 from fastapi import APIRouter
 from fastapi import FastAPI
-from app.api.router import router
 from app.api.auth_routes import router as auth_router
 from app.api.chat_routes import router as chat_router
 from app.api.user_routes import router as user_router
