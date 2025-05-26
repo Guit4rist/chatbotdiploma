@@ -1,15 +1,18 @@
 # app/api/router.py
 
 from fastapi import APIRouter
-from .auth_routes import router as auth_router
-from .chat_routes import router as chat_router
+from fastapi import FastAPI
+from app.api.router import router
+from app.api.auth_routes import router as auth_router
+from app.api.chat_routes import router as chat_router
 from app.api.user_routes import router as user_router
-from .conversation_routes import router as conversation_router
-from .chat_session_routes import router as chat_session_router
+from app.api.conversation_routes import router as conversation_router
+from app.api.chat_session_routes import router as chat_session_router
 from app.admin.admin_setup import router as admin_router
 from app.api import admin_analytics_routes
 
 
+app = FastAPI()
 router = APIRouter()
 router.include_router(auth_router)
 router.include_router(chat_router)
