@@ -3,6 +3,7 @@ from app.models.user import Base
 from app.db.database import engine
 from app.api.router import router
 
+
 from app.config.limiter import limiter
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -29,7 +30,7 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # Allow CORS (optional, but good for frontend dev)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust for production
+    allow_origins=["https://languagechatbot.onrender.com"],  # Adjust for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
