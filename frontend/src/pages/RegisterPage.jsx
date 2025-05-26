@@ -9,14 +9,12 @@ import {
   Stack,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../api/axios';
 import PageWrapper from '../components/layout/PageWrapper';
 import { motion } from 'framer-motion';
 
 const MotionPaper = motion(Paper);
 
-// Optional: move this to a config file
-const API_BASE_URL = 'http://localhost:8000';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -39,7 +37,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setError(null);
     try {
-      await axios.post(`${API_BASE_URL}/users/`, form);
+      await axios.post('/users/', form);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed');

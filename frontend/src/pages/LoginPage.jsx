@@ -9,7 +9,7 @@ import {
   Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../api/axios';
 import PageWrapper from '../components/layout/PageWrapper';
 import { motion } from 'framer-motion';
 
