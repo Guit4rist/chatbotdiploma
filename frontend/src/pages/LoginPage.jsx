@@ -12,11 +12,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import PageWrapper from '../components/layout/PageWrapper';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
 const MotionPaper = motion(Paper);
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({
     username: '',
     password: '',
@@ -34,9 +36,15 @@ const LoginPage = () => {
       const response = await axios.post('/login/', new URLSearchParams(form), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
+
       const token = response.data.access_token;
-      localStorage.setItem('token', token);
-      navigate('/chat');
+      const user = {
+        username: form.username,
+        // optionally include more user info from response if available
+      };
+
+      login(token, user); // update auth context
+      navigate('/chat');  // redirect to main app
     } catch (err) {
       setError('Invalid credentials. Please try again.');
     }
