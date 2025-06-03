@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -10,47 +9,50 @@ import Settings from './pages/SettingsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Register from './pages/RegisterPage';
 import { ParallaxProvider } from 'react-scroll-parallax';
-
+import { useAuth } from './context/AuthContext';
 
 function App() {
-  return (
-        <ParallaxProvider>
-    <>
-      <Navbar />
-      <main className="pt-16 px-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/chat"
-            element={
-              <ProtectedRoute>
-                <Chat />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </main>
-    </>
-    </ParallaxProvider>
+  const { loading } = useAuth(); // 👈 get loading state
 
+  if (loading) return null; // 👈 wait for auth hydration
+
+  return (
+    <ParallaxProvider>
+      <>
+        <Navbar />
+        <main className="pt-16 px-4">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute>
+                  <Chat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </main>
+      </>
+    </ParallaxProvider>
   );
 }
 

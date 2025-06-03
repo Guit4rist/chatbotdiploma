@@ -356,4 +356,8 @@ const ChatPage = () => {
   );
 };
 
+console.log("Chat page loaded");
+
+
 export default ChatPage;
+
