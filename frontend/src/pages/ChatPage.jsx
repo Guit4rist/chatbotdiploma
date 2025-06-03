@@ -4,6 +4,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Check';
 import MicIcon from '@mui/icons-material/Mic';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import { useAuth } from '../context/AuthContext';
+
 
 const ChatPage = () => {
   const { user } = useAuth();
