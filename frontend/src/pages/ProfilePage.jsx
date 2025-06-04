@@ -53,6 +53,9 @@ const ProfilePage = () => {
           preferred_language: res.data.preferred_language || '',
           language_level: res.data.language_level || '',
         });
+        if (res.data.avatar_url) {
+          setAvatarPreview(res.data.avatar_url);
+        }
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       } finally {
@@ -95,7 +98,7 @@ const ProfilePage = () => {
     formData.append('avatar', file);
 
     try {
-      await axios.post('/profile/upload-avatar/', formData, {
+      const res = await axios.post('/profile/upload-avatar/', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -168,7 +171,7 @@ const ProfilePage = () => {
               {user?.username}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              {user?.email || 'No email provided'}
+              {user?.email || t('profile.noEmail')}
             </Typography>
             <Box mt={2}>
               <Button
@@ -222,7 +225,7 @@ const ProfilePage = () => {
           <TextField
             fullWidth
             label="XP"
-            value={user?.xp ?? 0}
+            value={user?.current_xp ?? 0}
             margin="normal"
             variant="outlined"
             InputProps={{ readOnly: true }}
