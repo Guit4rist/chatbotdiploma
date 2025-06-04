@@ -16,7 +16,7 @@ import {
 import { motion } from 'framer-motion';
 import axios from '../api/axios';
 import PageWrapper from '../components/layout/PageWrapper';
-
+import { useAuth } from '../context/AuthContext';
 
 const MotionPaper = motion(Paper);
 
@@ -30,6 +30,12 @@ const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { auth } = useAuth();
+
+  const [file, setFile] = useState(null);
+  const [password, setPassword] = useState('');
+  const [passwordChanged, setPasswordChanged] = useState(false);
+  const [avatarUploaded, setAvatarUploaded] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -56,6 +62,7 @@ const SettingsPage = () => {
     if (!user) return;
     setSaving(true);
     try {
+      // Update profile settings
       await axios.put(
         `/users/${user.id}/profile`,
         {
@@ -68,6 +75,35 @@ const SettingsPage = () => {
           },
         }
       );
+
+      // Update password if provided
+      if (password.trim() !== '') {
+        await axios.post(
+          `/users/${user.id}/change-password`,
+          { new_password: password },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+          }
+        );
+        setPasswordChanged(true);
+      }
+
+      // Upload avatar if provided
+      if (file) {
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        await axios.post(`/users/${user.id}/upload-avatar`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setAvatarUploaded(true);
+      }
+
       setSnackbarOpen(true);
     } catch (error) {
       console.error('Failed to save settings:', error);
@@ -107,7 +143,7 @@ const SettingsPage = () => {
           Settings
         </Typography>
         <Typography variant="body2" sx={{ mb: 3, color: '#ccc' }}>
-          Update your language preferences and learning level.
+          Update your language preferences, password, and avatar.
         </Typography>
 
         <Grid container spacing={3}>
@@ -115,7 +151,7 @@ const SettingsPage = () => {
             <TextField
               select
               fullWidth
-              label="Preferred Language"
+              label="Preferred Language (UI)"
               value={preferredLanguage}
               onChange={(e) => setPreferredLanguage(e.target.value)}
               InputLabelProps={{ style: { color: '#ccc' } }}
@@ -146,6 +182,24 @@ const SettingsPage = () => {
             </TextField>
           </Grid>
           <Grid item xs={12}>
+            <TextField
+              fullWidth
+              type="password"
+              label="New Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="outlined" component="label" sx={{ color: '#E0E1DD', borderColor: '#90A4C4' }}>
+              Upload Avatar
+              <input type="file" hidden onChange={(e) => setFile(e.target.files[0])} />
+            </Button>
+            {file && <Typography mt={1}>{file.name}</Typography>}
+          </Grid>
+          <Grid item xs={12}>
             <Box display="flex" justifyContent="flex-end">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
                 <Button
@@ -173,7 +227,7 @@ const SettingsPage = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert severity="success" onClose={() => setSnackbarOpen(false)}>
-          Settings saved successfully!
+          Changes saved successfully!
         </Alert>
       </Snackbar>
     </PageWrapper>
