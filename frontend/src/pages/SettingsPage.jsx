@@ -12,8 +12,16 @@ import {
   Alert,
   MenuItem,
   Box,
+  Avatar,
+  Divider,
 } from '@mui/material';
 import { motion } from 'framer-motion';
+import {
+  Language as LanguageIcon,
+  Lock as LockIcon,
+  UploadFile as UploadFileIcon,
+  Face as FaceIcon,
+} from '@mui/icons-material';
 import axios from '../api/axios';
 import PageWrapper from '../components/layout/PageWrapper';
 import { useAuth } from '../context/AuthContext';
@@ -33,9 +41,8 @@ const SettingsPage = () => {
   const { auth } = useAuth();
 
   const [file, setFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [password, setPassword] = useState('');
-  const [passwordChanged, setPasswordChanged] = useState(false);
-  const [avatarUploaded, setAvatarUploaded] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -48,6 +55,9 @@ const SettingsPage = () => {
         setUser(res.data);
         setPreferredLanguage(res.data.preferred_language || '');
         setLanguageLevel(res.data.language_level || '');
+        if (res.data.avatar_url) {
+          setAvatarPreview(res.data.avatar_url);
+        }
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       } finally {
@@ -62,46 +72,33 @@ const SettingsPage = () => {
     if (!user) return;
     setSaving(true);
     try {
-      // Update profile settings
       await axios.put(
         `/users/${user.id}/profile`,
+        { preferred_language: preferredLanguage, language_level: languageLevel },
         {
-          preferred_language: preferredLanguage,
-          language_level: languageLevel,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         }
       );
 
-      // Update password if provided
       if (password.trim() !== '') {
         await axios.post(
           `/users/${user.id}/change-password`,
           { new_password: password },
           {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            },
+            headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
           }
         );
-        setPasswordChanged(true);
       }
 
-      // Upload avatar if provided
       if (file) {
         const formData = new FormData();
         formData.append('avatar', file);
-
         await axios.post(`/users/${user.id}/upload-avatar`, formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
             'Content-Type': 'multipart/form-data',
           },
         });
-        setAvatarUploaded(true);
       }
 
       setSnackbarOpen(true);
@@ -109,6 +106,15 @@ const SettingsPage = () => {
       console.error('Failed to save settings:', error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      const previewURL = URL.createObjectURL(selectedFile);
+      setAvatarPreview(previewURL);
     }
   };
 
@@ -131,93 +137,146 @@ const SettingsPage = () => {
         transition={{ duration: 0.6 }}
         sx={{
           p: 5,
-          maxWidth: 600,
+          maxWidth: 700,
           mx: 'auto',
-          mt: 10,
+          mt: 8,
           backgroundColor: '#1B263B',
           color: '#E0E1DD',
           borderRadius: 3,
         }}
       >
-        <Typography variant="h5" gutterBottom fontWeight={600}>
+        <Typography variant="h4" gutterBottom fontWeight={700}>
           Settings
         </Typography>
-        <Typography variant="body2" sx={{ mb: 3, color: '#ccc' }}>
-          Update your language preferences, password, and avatar.
+        <Typography variant="body1" sx={{ mb: 4, color: '#BFC9DA' }}>
+          Manage your preferences and personal information.
         </Typography>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <TextField
-              select
-              fullWidth
-              label="Preferred Language (UI)"
-              value={preferredLanguage}
-              onChange={(e) => setPreferredLanguage(e.target.value)}
-              InputLabelProps={{ style: { color: '#ccc' } }}
-              InputProps={{ style: { color: '#E0E1DD' } }}
+        {/* Language Preferences */}
+        <Box mb={4}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <LanguageIcon sx={{ mr: 1, color: '#90A4C4' }} />
+            <Typography variant="h6" fontWeight={600}>
+              Language Preferences
+            </Typography>
+          </Box>
+          <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                label="Preferred Language (UI)"
+                value={preferredLanguage}
+                onChange={(e) => setPreferredLanguage(e.target.value)}
+                InputLabelProps={{ style: { color: '#ccc' } }}
+                InputProps={{ style: { color: '#E0E1DD' } }}
+              >
+                {languageOptions.map((lang) => (
+                  <MenuItem key={lang} value={lang}>
+                    {lang}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                label="Language Level"
+                value={languageLevel}
+                onChange={(e) => setLanguageLevel(e.target.value)}
+                InputLabelProps={{ style: { color: '#ccc' } }}
+                InputProps={{ style: { color: '#E0E1DD' } }}
+              >
+                {levelOptions.map((level) => (
+                  <MenuItem key={level} value={level}>
+                    {level}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Password */}
+        <Box mb={4}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <LockIcon sx={{ mr: 1, color: '#90A4C4' }} />
+            <Typography variant="h6" fontWeight={600}>
+              Security
+            </Typography>
+          </Box>
+          <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+
+          <TextField
+            fullWidth
+            type="password"
+            label="New Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputLabelProps={{ style: { color: '#ccc' } }}
+            InputProps={{ style: { color: '#E0E1DD' } }}
+          />
+        </Box>
+
+        {/* Avatar */}
+        <Box mb={4}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <FaceIcon sx={{ mr: 1, color: '#90A4C4' }} />
+            <Typography variant="h6" fontWeight={600}>
+              Profile Avatar
+            </Typography>
+          </Box>
+          <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+
+          <Grid container spacing={3} alignItems="center">
+            <Grid item>
+              <Avatar
+                src={avatarPreview}
+                sx={{ width: 72, height: 72, border: '2px solid #778DA9' }}
+              />
+            </Grid>
+            <Grid item>
+              <Button
+                variant="outlined"
+                component="label"
+                startIcon={<UploadFileIcon />}
+                sx={{ color: '#E0E1DD', borderColor: '#90A4C4' }}
+              >
+                Upload New
+                <input type="file" hidden onChange={handleFileChange} />
+              </Button>
+              {file && (
+                <Typography mt={1} sx={{ fontSize: 14, color: '#BFC9DA' }}>
+                  {file.name}
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Save Button */}
+        <Box display="flex" justifyContent="flex-end" mt={3}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={saving}
+              sx={{
+                backgroundColor: '#778DA9',
+                color: '#fff',
+                px: 4,
+                py: 1,
+                fontWeight: 600,
+                '&:hover': { backgroundColor: '#90A4C4' },
+              }}
             >
-              {languageOptions.map((lang) => (
-                <MenuItem key={lang} value={lang}>
-                  {lang}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              select
-              fullWidth
-              label="Language Level"
-              value={languageLevel}
-              onChange={(e) => setLanguageLevel(e.target.value)}
-              InputLabelProps={{ style: { color: '#ccc' } }}
-              InputProps={{ style: { color: '#E0E1DD' } }}
-            >
-              {levelOptions.map((level) => (
-                <MenuItem key={level} value={level}>
-                  {level}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              type="password"
-              label="New Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputLabelProps={{ style: { color: '#ccc' } }}
-              InputProps={{ style: { color: '#E0E1DD' } }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button variant="outlined" component="label" sx={{ color: '#E0E1DD', borderColor: '#90A4C4' }}>
-              Upload Avatar
-              <input type="file" hidden onChange={(e) => setFile(e.target.files[0])} />
+              {saving ? 'Saving...' : 'Save Changes'}
             </Button>
-            {file && <Typography mt={1}>{file.name}</Typography>}
-          </Grid>
-          <Grid item xs={12}>
-            <Box display="flex" justifyContent="flex-end">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
-                <Button
-                  variant="contained"
-                  onClick={handleSave}
-                  disabled={saving}
-                  sx={{
-                    backgroundColor: '#778DA9',
-                    color: '#fff',
-                    '&:hover': { backgroundColor: '#90A4C4' },
-                  }}
-                >
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </motion.div>
-            </Box>
-          </Grid>
-        </Grid>
+          </motion.div>
+        </Box>
       </MotionPaper>
 
       <Snackbar
