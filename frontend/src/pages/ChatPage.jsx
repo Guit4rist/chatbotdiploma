@@ -301,7 +301,7 @@ const ChatPage = () => {
               <ListItem
                 key={session.id}
                 secondaryAction={
-                  <>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
                     {editingSessionId === session.id ? (
                       <IconButton
                         edge="end"
@@ -314,21 +314,35 @@ const ChatPage = () => {
                         <SaveIcon />
                       </IconButton>
                     ) : (
-                      <IconButton
-                        edge="end"
-                        onClick={() => {
-                          // handleDeleteSession here
-                          setSessions((prev) => prev.filter((s) => s.id !== session.id));
-                          if (selectedSessionId === session.id && sessions.length > 1) {
-                            setSelectedSessionId(sessions.find((s) => s.id !== session.id)?.id);
-                          }
-                        }}
-                        sx={{ color: 'white' }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                      <>
+                        <IconButton
+                          edge="end"
+                          onClick={() => {
+                            setEditingSessionId(session.id);
+                            setEditedTitle(session.title);
+                          }}
+                          sx={{ color: 'white' }}
+                          aria-label="Rename session"
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          edge="end"
+                          onClick={() => {
+                            // handleDeleteSession here
+                            setSessions((prev) => prev.filter((s) => s.id !== session.id));
+                            if (selectedSessionId === session.id && sessions.length > 1) {
+                              setSelectedSessionId(sessions.find((s) => s.id !== session.id)?.id);
+                            }
+                          }}
+                          sx={{ color: 'white' }}
+                          aria-label="Delete session"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </>
                     )}
-                  </>
+                  </Box>
                 }
                 disablePadding
               >
@@ -355,20 +369,8 @@ const ChatPage = () => {
                     <ListItemText primary={session.title} />
                   )}
                 </ListItemButton>
-                {editingSessionId !== session.id && (
-                  <Tooltip title="Rename">
-                    <IconButton
-                      onClick={() => {
-                        setEditingSessionId(session.id);
-                        setEditedTitle(session.title);
-                      }}
-                      sx={{ color: 'white' }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
               </ListItem>
+
             ))}
           </List>
         </Grid>
