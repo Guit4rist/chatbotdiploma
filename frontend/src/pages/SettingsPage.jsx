@@ -128,169 +128,215 @@ const SettingsPage = () => {
     );
   }
 
-  return (
-    <PageWrapper>
-      <MotionPaper
-        elevation={6}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        sx={{
-          p: 5,
-          maxWidth: 700,
-          mx: 'auto',
-          mt: 8,
-          backgroundColor: '#1B263B',
-          color: '#E0E1DD',
-          borderRadius: 3,
-        }}
-      >
-        <Typography variant="h4" gutterBottom fontWeight={700}>
-          Settings
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 4, color: '#BFC9DA' }}>
-          Manage your preferences and personal information.
-        </Typography>
+  // Only the changed/enhanced part is shown below. Replace the entire return block in your component with the following:
 
-        {/* Language Preferences */}
-        <Box mb={4}>
-          <Box display="flex" alignItems="center" mb={1}>
-            <LanguageIcon sx={{ mr: 1, color: '#90A4C4' }} />
-            <Typography variant="h6" fontWeight={600}>
-              Language Preferences
-            </Typography>
-          </Box>
-          <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+return (
+  <PageWrapper>
+    <MotionPaper
+      elevation={6}
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      sx={{
+        p: 5,
+        maxWidth: 700,
+        mx: 'auto',
+        mt: 8,
+        backgroundColor: '#1B263B',
+        color: '#E0E1DD',
+        borderRadius: 3,
+      }}
+    >
+      <Typography variant="h4" gutterBottom fontWeight={700}>
+        Settings
+      </Typography>
+      <Typography variant="body1" sx={{ mb: 4, color: '#BFC9DA' }}>
+        Manage your preferences and personal information.
+      </Typography>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                select
-                fullWidth
-                label="Preferred Language (UI)"
-                value={preferredLanguage}
-                onChange={(e) => setPreferredLanguage(e.target.value)}
-                InputLabelProps={{ style: { color: '#ccc' } }}
-                InputProps={{ style: { color: '#E0E1DD' } }}
-              >
-                {languageOptions.map((lang) => (
-                  <MenuItem key={lang} value={lang}>
-                    {lang}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                select
-                fullWidth
-                label="Language Level"
-                value={languageLevel}
-                onChange={(e) => setLanguageLevel(e.target.value)}
-                InputLabelProps={{ style: { color: '#ccc' } }}
-                InputProps={{ style: { color: '#E0E1DD' } }}
-              >
-                {levelOptions.map((level) => (
-                  <MenuItem key={level} value={level}>
-                    {level}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
+      {/* Profile Avatar - moved to top */}
+      <Box mb={4}>
+        <Box display="flex" alignItems="center" mb={1}>
+          <FaceIcon sx={{ mr: 1, color: '#90A4C4' }} />
+          <Typography variant="h6" fontWeight={600}>
+            Profile Avatar
+          </Typography>
+        </Box>
+        <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+
+        <Grid container spacing={3} alignItems="center">
+          <Grid item>
+            <Avatar
+              src={avatarPreview}
+              sx={{ width: 72, height: 72, border: '2px solid #778DA9' }}
+            />
           </Grid>
-        </Box>
-
-        {/* Password */}
-        <Box mb={4}>
-          <Box display="flex" alignItems="center" mb={1}>
-            <LockIcon sx={{ mr: 1, color: '#90A4C4' }} />
-            <Typography variant="h6" fontWeight={600}>
-              Security
-            </Typography>
-          </Box>
-          <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
-
-          <TextField
-            fullWidth
-            type="password"
-            label="New Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputLabelProps={{ style: { color: '#ccc' } }}
-            InputProps={{ style: { color: '#E0E1DD' } }}
-          />
-        </Box>
-
-        {/* Avatar */}
-        <Box mb={4}>
-          <Box display="flex" alignItems="center" mb={1}>
-            <FaceIcon sx={{ mr: 1, color: '#90A4C4' }} />
-            <Typography variant="h6" fontWeight={600}>
-              Profile Avatar
-            </Typography>
-          </Box>
-          <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
-
-          <Grid container spacing={3} alignItems="center">
-            <Grid item>
-              <Avatar
-                src={avatarPreview}
-                sx={{ width: 72, height: 72, border: '2px solid #778DA9' }}
-              />
-            </Grid>
-            <Grid item>
-              <Button
-                variant="outlined"
-                component="label"
-                startIcon={<UploadFileIcon />}
-                sx={{ color: '#E0E1DD', borderColor: '#90A4C4' }}
-              >
-                Upload New
-                <input type="file" hidden onChange={handleFileChange} />
-              </Button>
-              {file && (
-                <Typography mt={1} sx={{ fontSize: 14, color: '#BFC9DA' }}>
-                  {file.name}
-                </Typography>
-              )}
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* Save Button */}
-        <Box display="flex" justifyContent="flex-end" mt={3}>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+          <Grid item>
             <Button
-              variant="contained"
-              onClick={handleSave}
-              disabled={saving}
-              sx={{
-                backgroundColor: '#778DA9',
-                color: '#fff',
-                px: 4,
-                py: 1,
-                fontWeight: 600,
-                '&:hover': { backgroundColor: '#90A4C4' },
-              }}
+              variant="outlined"
+              component="label"
+              startIcon={<UploadFileIcon />}
+              sx={{ color: '#E0E1DD', borderColor: '#90A4C4' }}
             >
-              {saving ? 'Saving...' : 'Save Changes'}
+              Upload New
+              <input type="file" hidden onChange={handleFileChange} />
             </Button>
-          </motion.div>
-        </Box>
-      </MotionPaper>
+            {file && (
+              <Typography mt={1} sx={{ fontSize: 14, color: '#BFC9DA' }}>
+                {file.name}
+              </Typography>
+            )}
+          </Grid>
+        </Grid>
+      </Box>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert severity="success" onClose={() => setSnackbarOpen(false)}>
-          Changes saved successfully!
-        </Alert>
-      </Snackbar>
-    </PageWrapper>
-  );
+      {/* Language Preferences */}
+      <Box mb={4}>
+        <Box display="flex" alignItems="center" mb={1}>
+          <LanguageIcon sx={{ mr: 1, color: '#90A4C4' }} />
+          <Typography variant="h6" fontWeight={600}>
+            Language Preferences
+          </Typography>
+        </Box>
+        <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label="Preferred Language (UI)"
+              value={preferredLanguage}
+              onChange={(e) => setPreferredLanguage(e.target.value)}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            >
+              {languageOptions.map((lang) => (
+                <MenuItem key={lang} value={lang}>
+                  {lang}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label="Language Level"
+              value={languageLevel}
+              onChange={(e) => setLanguageLevel(e.target.value)}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            >
+              {levelOptions.map((level) => (
+                <MenuItem key={level} value={level}>
+                  {level}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Email Change Section */}
+      <Box mb={4}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: '#90A4C4', mb: 1 }}>
+          Change Email
+        </Typography>
+        <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+        <TextField
+          fullWidth
+          type="email"
+          label="New Email Address"
+          value={user?.email || ''}
+          onChange={(e) => setUser((prev) => ({ ...prev, email: e.target.value }))}
+          InputLabelProps={{ style: { color: '#ccc' } }}
+          InputProps={{ style: { color: '#E0E1DD' } }}
+        />
+      </Box>
+
+      {/* Security Section */}
+      <Box mb={4}>
+        <Box display="flex" alignItems="center" mb={1}>
+          <LockIcon sx={{ mr: 1, color: '#90A4C4' }} />
+          <Typography variant="h6" fontWeight={600}>
+            Change Password
+          </Typography>
+        </Box>
+        <Divider sx={{ mb: 2, borderColor: '#32475b' }} />
+
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              type="password"
+              label="Old Password"
+              value={user?.oldPassword || ''}
+              onChange={(e) => setUser((prev) => ({ ...prev, oldPassword: e.target.value }))}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="password"
+              label="New Password"
+              value={user?.newPassword || ''}
+              onChange={(e) => setUser((prev) => ({ ...prev, newPassword: e.target.value }))}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="password"
+              label="Confirm New Password"
+              value={user?.confirmPassword || ''}
+              onChange={(e) => setUser((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+              InputLabelProps={{ style: { color: '#ccc' } }}
+              InputProps={{ style: { color: '#E0E1DD' } }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Save Button */}
+      <Box display="flex" justifyContent="flex-end" mt={3}>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            disabled={saving}
+            sx={{
+              backgroundColor: '#778DA9',
+              color: '#fff',
+              px: 4,
+              py: 1,
+              fontWeight: 600,
+              '&:hover': { backgroundColor: '#90A4C4' },
+            }}
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </motion.div>
+      </Box>
+    </MotionPaper>
+
+    <Snackbar
+      open={snackbarOpen}
+      autoHideDuration={3000}
+      onClose={() => setSnackbarOpen(false)}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert severity="success" onClose={() => setSnackbarOpen(false)}>
+        Changes saved successfully!
+      </Alert>
+    </Snackbar>
+  </PageWrapper>
+);
+
 };
 
 export default SettingsPage;
