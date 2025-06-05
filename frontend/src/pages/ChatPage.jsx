@@ -32,18 +32,16 @@ import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
 import AddIcon from '@mui/icons-material/Add';
 import ReactMarkdown from 'react-markdown';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-// Animated typing dots component
 const TypingIndicator = () => {
   return (
     <Box
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 0.5,
-        pl: 0.5,
+        gap: 1,
+        pl: 1,
       }}
       aria-label="Bot is typing"
     >
@@ -52,8 +50,8 @@ const TypingIndicator = () => {
           key={i}
           component="span"
           sx={{
-            width: 6,
-            height: 6,
+            width: 8,
+            height: 8,
             bgcolor: '#0c2548',
             borderRadius: '50%',
             animation: `typingBounce 1.4s infinite`,
@@ -86,7 +84,6 @@ const ChatPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // States for chat and sessions (same as before)
   const [sessions, setSessions] = useState([]);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -100,7 +97,6 @@ const ChatPage = () => {
   const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
-  // Fetch sessions on mount or when sessions change
   useEffect(() => {
     const fetchSessions = async () => {
       const data = [
@@ -113,7 +109,6 @@ const ChatPage = () => {
     fetchSessions();
   }, []);
 
-  // Fetch messages when selectedSessionId changes
   useEffect(() => {
     if (!selectedSessionId) return;
     const fetchMessages = async () => {
@@ -126,14 +121,12 @@ const ChatPage = () => {
     fetchMessages();
   }, [selectedSessionId]);
 
-  // Scroll to bottom on messages update
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // Send message handler
   const handleSend = async () => {
     if (!input.trim()) return;
     const newMessage = { sender: 'user', text: input.trim() };
@@ -154,7 +147,6 @@ const ChatPage = () => {
     }, 1500);
   };
 
-  // Handle enter key send
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -162,7 +154,6 @@ const ChatPage = () => {
     }
   };
 
-  // Render each chat message with markdown
   const renderMessage = (msg, index) => {
     const isUser = msg.sender === 'user';
     return (
@@ -172,26 +163,26 @@ const ChatPage = () => {
             display: 'flex',
             justifyContent: isUser ? 'flex-end' : 'flex-start',
             px: 0,
-            py: 0.5,
+            py: 1,
           }}
         >
           {!isUser && (
-            <Avatar sx={{ bgcolor: '#0c2548', width: 24, height: 24, mr: 0.75 }}>
+            <Avatar sx={{ bgcolor: '#0c2548', width: 32, height: 32, mr: 1 }}>
               🤖
             </Avatar>
           )}
           <Box
             sx={{
-              maxWidth: isMobile ? '80%' : '65%',
-              p: 1.5,
-              borderRadius: 2.5,
+              maxWidth: isMobile ? '85%' : '70%',
+              p: 2,
+              borderRadius: 3,
               bgcolor: isUser ? '#0c2548' : 'rgba(255, 255, 255, 0.08)',
               color: isUser ? '#fff' : '#e0e0e0',
               whiteSpace: 'pre-wrap',
-              boxShadow: 3,
-              backdropFilter: !isUser && 'blur(6px)',
+              boxShadow: 4,
+              backdropFilter: !isUser && 'blur(8px)',
               border: !isUser && '1px solid rgba(255,255,255,0.1)',
-              fontSize: '0.85rem',
+              fontSize: '0.95rem',
               '& a': {
                 color: '#82aaff',
                 textDecoration: 'underline',
@@ -212,7 +203,7 @@ const ChatPage = () => {
                       color: '#82aaff',
                       borderRadius: 1,
                       px: 0.5,
-                      fontSize: '0.75rem',
+                      fontSize: '0.85rem',
                       fontFamily: 'monospace',
                     }}
                     {...props}
@@ -220,15 +211,13 @@ const ChatPage = () => {
                     {children}
                   </Box>
                 ),
-                ul: ({ node, ...props }) => <Box component="ul" sx={{ pl: 2.5, mb: 0.5 }} {...props} />,
-                li: ({ node, ...props }) => <Box component="li" sx={{ mb: 0.25 }} {...props} />,
+                ul: ({ node, ...props }) => <Box component="ul" sx={{ pl: 3, mb: 1 }} {...props} />,
+                li: ({ node, ...props }) => <Box component="li" sx={{ mb: 0.5 }} {...props} />,
               }}
             />
           </Box>
           {isUser && (
-            <Avatar sx={{ bgcolor: '#0c2548', width: 24, height: 24, ml: 0.75 }}>
-              🧑
-            </Avatar>
+            <Avatar sx={{ bgcolor: '#0c2548', width: 32, height: 32, ml: 1 }}>🧑</Avatar>
           )}
         </ListItem>
       </Slide>
@@ -240,12 +229,13 @@ const ChatPage = () => {
       maxWidth="xl"
       disableGutters
       sx={{
-        height: '100vh',
-        mt: 7,
+        height: '100vh',         // full viewport height
+        mt: 0,                  // remove top margin so no overflow
+        px: 0,                  // no horizontal padding to use full width
         background: 'linear-gradient(135deg, #0c2548 0%, #163a61 50%, #0c2548 100%)',
-        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden',      // prevent page scroll
       }}
     >
       <Grid container sx={{ height: '100%' }}>
@@ -258,150 +248,90 @@ const ChatPage = () => {
           sx={{
             bgcolor: '#0c2548',
             color: '#fff',
-            p: 1.5,
+            p: 2,
             display: 'flex',
             flexDirection: 'column',
-            height: '100%',
-            overflowY: 'auto',
-            boxShadow: 3,
+            height: '100%',        // full height of container
+            overflowY: 'auto',    // scroll inside sidebar if needed
+            borderRight: '1px solid rgba(255,255,255,0.1)',
           }}
         >
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              Sessions
-            </Typography>
-            <Tooltip title="New Session">
-              <IconButton size="small" color="inherit" onClick={() => setCreating(true)}>
-                <AddIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          <List
-            dense
-            sx={{ overflowY: 'auto', maxHeight: 'calc(100% - 80px)' }}
-            aria-label="Chat sessions list"
-          >
+          <Typography variant="h6" gutterBottom>
+            Chat Sessions
+          </Typography>
+          <List sx={{ flexGrow: 1, overflowY: 'auto' }}>
             {sessions.map((session) => (
-              <ListItem
-                key={session.id}
-                disablePadding
-                secondaryAction={
-                  <>
-                    {editingSessionId === session.id ? (
-                      <>
-                        <Tooltip title="Save">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => {
-                              setEditingSessionId(null);
-                              // Save logic here
-                            }}
-                            aria-label={`Save session title ${editedTitle}`}
-                          >
-                            <SaveIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </>
-                    ) : (
-                      <>
-                        <Tooltip title="Edit">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => {
-                              setEditingSessionId(session.id);
-                              setEditedTitle(session.title);
-                            }}
-                            aria-label={`Edit session ${session.title}`}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => {
-                              setSessions((prev) =>
-                                prev.filter((s) => s.id !== session.id)
-                              );
-                              if (selectedSessionId === session.id)
-                                setSelectedSessionId(
-                                  sessions.length > 1 ? sessions[0].id : null
-                                );
-                            }}
-                            aria-label={`Delete session ${session.title}`}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </>
-                    )}
-                  </>
-                }
-                sx={{
-                  bgcolor:
-                    selectedSessionId === session.id
-                      ? 'rgba(255, 255, 255, 0.12)'
-                      : 'transparent',
-                  borderRadius: 1,
-                  mb: 0.5,
-                }}
-              >
-                {editingSessionId === session.id ? (
-                  <TextField
-                    variant="standard"
-                    size="small"
-                    value={editedTitle}
-                    onChange={(e) => setEditedTitle(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        setEditingSessionId(null);
-                        // Save logic here
-                      }
-                    }}
-                    inputProps={{ 'aria-label': 'Edit session title' }}
-                    sx={{ color: '#fff' }}
-                    fullWidth
-                  />
-                ) : (
-                  <ListItemButton
-                    onClick={() => setSelectedSessionId(session.id)}
-                    sx={{ pl: 1.5 }}
-                    aria-current={selectedSessionId === session.id ? 'true' : undefined}
-                  >
-                    <ListItemText
-                      primary={session.title}
-                      primaryTypographyProps={{
-                        noWrap: true,
-                        fontSize: '0.85rem',
-                        fontWeight: selectedSessionId === session.id ? 'bold' : 'normal',
-                      }}
-                    />
-                  </ListItemButton>
-                )}
+              <ListItem key={session.id} disablePadding>
+                <ListItemButton
+                  selected={selectedSessionId === session.id}
+                  onClick={() => setSelectedSessionId(session.id)}
+                >
+                  <ListItemText primary={session.title} />
+                </ListItemButton>
+                {/* Session edit & delete buttons could be added here */}
               </ListItem>
             ))}
           </List>
 
-          {/* XP and Level */}
-          <Box mt="auto" pt={1} pb={0.5} textAlign="center">
-            <Chip
-              label={`Level ${level} — XP ${xp}/100`}
-              color="primary"
-              size="small"
-              sx={{
-                fontWeight: 'bold',
-                fontSize: '0.75rem',
-                bgcolor: 'rgba(255,255,255,0.15)',
-              }}
-              aria-label="User experience level and points"
-            />
+          {/* Create session form */}
+          <Box mt={2}>
+            {creating ? (
+              <>
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={newSessionTitle}
+                  onChange={(e) => setNewSessionTitle(e.target.value)}
+                  placeholder="New session title"
+                />
+                <Box mt={1} display="flex" justifyContent="flex-end" gap={1}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => {
+                      if (newSessionTitle.trim()) {
+                        setSessions((prev) => [
+                          ...prev,
+                          { id: Date.now().toString(), title: newSessionTitle.trim() },
+                        ]);
+                        setNewSessionTitle('');
+                        setCreating(false);
+                      }
+                    }}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      setCreating(false);
+                      setNewSessionTitle('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              </>
+            ) : (
+              <Button
+                startIcon={<AddIcon />}
+                onClick={() => setCreating(true)}
+                fullWidth
+                sx={{ mt: 1 }}
+              >
+                New Session
+              </Button>
+            )}
           </Box>
+
+          <Divider sx={{ my: 2 }} />
+
+          <Typography variant="body2" color="rgba(255,255,255,0.6)">
+            Level: {level} | XP: {xp}
+          </Typography>
         </Grid>
 
-        {/* Main chat area */}
+        {/* Chat area */}
         <Grid
           item
           xs={12}
@@ -410,137 +340,92 @@ const ChatPage = () => {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            height: '100%',
-            bgcolor: '#163a61',
-            p: isMobile ? 1 : 2,
+            height: '100%',          // full height container
+            bgcolor: 'rgba(255,255,255,0.03)',
+            p: 2,
+            overflow: 'hidden',      // prevent whole chat area scroll
           }}
         >
-          <Paper
+          {/* Message list */}
+          <List
             ref={listRef}
             sx={{
               flexGrow: 1,
-              overflowY: 'auto',
-              p: 1,
-              bgcolor: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: 2,
-              boxShadow: 1,
+              overflowY: 'auto',      // scroll chat messages here
               mb: 1,
+              pb: 1,
+              scrollbarWidth: 'thin',
+              '&::-webkit-scrollbar': {
+                width: 8,
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                borderRadius: 4,
+              },
             }}
-            aria-live="polite"
-            aria-relevant="additions"
           >
-            <List dense disablePadding>
-              {messages.map((msg, i) => renderMessage(msg, i))}
-              {loading && (
-                <ListItem
-                  sx={{
-                    justifyContent: 'flex-start',
-                    px: 0,
-                    py: 0.5,
-                  }}
-                >
-                  <Avatar
-                    sx={{ bgcolor: '#0c2548', width: 24, height: 24, mr: 0.75 }}
-                    aria-hidden="true"
-                  >
-                    🤖
-                  </Avatar>
-                  <Typography
-                    sx={{ fontSize: '0.85rem', color: '#e0e0e0' }}
-                    aria-label="Bot is typing"
-                  >
-                    <TypingIndicator />
-                  </Typography>
-                </ListItem>
-              )}
-            </List>
-          </Paper>
+            {messages.map(renderMessage)}
+            {loading && (
+              <ListItem sx={{ justifyContent: 'flex-start', px: 0 }}>
+                <Avatar sx={{ bgcolor: '#0c2548', width: 32, height: 32, mr: 1 }}>🤖</Avatar>
+                <TypingIndicator />
+              </ListItem>
+            )}
+          </List>
 
-          <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
-            <Grid container spacing={1} alignItems="center">
-              <Grid item xs>
-                <TextField
-                  fullWidth
-                  multiline
-                  maxRows={4}
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    bgcolor: '#fff',
-                    borderRadius: 2,
-                    '& .MuiOutlinedInput-root': {
-                      fontSize: '0.9rem',
-                    },
-                  }}
-                  inputProps={{ 'aria-label': 'Chat input field' }}
-                />
-              </Grid>
-              <Grid item>
-                <Tooltip title="Send message">
-                  <span>
-                    <IconButton
-                      color="primary"
-                      type="submit"
-                      disabled={loading || !input.trim()}
-                      aria-label="Send message"
-                      size="large"
-                    >
-                      <SendIcon fontSize="small" />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-              </Grid>
-            </Grid>
+          {/* Input area */}
+          <Box
+            component="form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+            sx={{
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              pt: 1,
+              borderTop: '1px solid rgba(255,255,255,0.1)',
+            }}
+          >
+            <TextField
+              multiline
+              minRows={1}
+              maxRows={4}
+              placeholder="Type your message..."
+              fullWidth
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              disabled={loading}
+              sx={{
+                bgcolor: '#163a61',
+                borderRadius: 2,
+                '& .MuiInputBase-input': { color: '#fff' },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255,255,255,0.2)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#82aaff',
+                },
+              }}
+              inputProps={{ 'aria-label': 'Chat input' }}
+            />
+            <Tooltip title="Send message">
+              <span>
+                <IconButton
+                  color="primary"
+                  type="submit"
+                  disabled={loading || !input.trim()}
+                  aria-label="Send message"
+                >
+                  {loading ? <CircularProgress size={24} /> : <SendIcon />}
+                </IconButton>
+              </span>
+            </Tooltip>
           </Box>
         </Grid>
       </Grid>
-
-      {/* New session dialog */}
-      <Dialog open={creating} onClose={() => setCreating(false)} aria-labelledby="new-session-dialog">
-        <DialogTitle id="new-session-dialog" sx={{ fontSize: '1.25rem' }}>
-          Create New Session
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Session Title"
-            fullWidth
-            variant="standard"
-            value={newSessionTitle}
-            onChange={(e) => setNewSessionTitle(e.target.value)}
-            inputProps={{ 'aria-label': 'New session title' }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreating(false)} size="small" aria-label="Cancel new session">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              if (newSessionTitle.trim()) {
-                const newSession = {
-                  id: (sessions.length + 1).toString(),
-                  title: newSessionTitle.trim(),
-                };
-                setSessions((prev) => [...prev, newSession]);
-                setSelectedSessionId(newSession.id);
-                setNewSessionTitle('');
-                setCreating(false);
-              }
-            }}
-            size="small"
-            disabled={!newSessionTitle.trim()}
-            aria-label="Create new session"
-          >
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 };
