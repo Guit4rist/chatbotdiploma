@@ -1,87 +1,169 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
+  Button,
+  Chip,
+  CircularProgress,
   Container,
-  Grid,
-  Paper,
-  Typography,
-  IconButton,
-  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  Grid,
+  IconButton,
   List,
   ListItem,
-  Chip,
-  LinearProgress,
+  ListItemButton,
+  ListItemText,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography,
   Avatar,
+  Slide,
+  useTheme,
 } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Check';
+import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
-import { AuthContext } from '../context/AuthContext';
-import TypingIndicator from '../components/TypingIndicator';
+import AddIcon from '@mui/icons-material/Add';
+import ReactMarkdown from 'react-markdown';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import LinearProgress from '@mui/material/LinearProgress';
+
+
+// Animated typing dots component
+const TypingIndicator = () => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        pl: 1,
+      }}
+      aria-label="Bot is typing"
+    >
+      {[...Array(3)].map((_, i) => (
+        <Box
+          key={i}
+          component="span"
+          sx={{
+            width: 8,
+            height: 8,
+            bgcolor: '#0c2548',
+            borderRadius: '50%',
+            animation: `typingBounce 1.4s infinite`,
+            animationDelay: `${i * 0.3}s`,
+            display: 'inline-block',
+          }}
+        />
+      ))}
+
+      <style>
+        {`
+          @keyframes typingBounce {
+            0%, 80%, 100% {
+              transform: translateY(0);
+              opacity: 0.3;
+            }
+            40% {
+              transform: translateY(-6px);
+              opacity: 1;
+            }
+          }
+        `}
+      </style>
+    </Box>
+  );
+};
 
 const ChatPage = () => {
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // States for chat and sessions (same as before)
+  const [sessions, setSessions] = useState([]);
+  const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [xp, setXp] = useState(0);
+  const [creating, setCreating] = useState(false);
+  const [newSessionTitle, setNewSessionTitle] = useState('');
+  const [editingSessionId, setEditingSessionId] = useState(null);
+  const [editedTitle, setEditedTitle] = useState('');
   const [level, setLevel] = useState(1);
-
+  const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
+  // Fetch sessions on mount or when sessions change
   useEffect(() => {
-    if (xp >= level * 100) {
-      setLevel((prev) => prev + 1);
+    // Fetch sessions and set selectedSessionId
+    // This is a placeholder; replace with your real fetch logic
+    const fetchSessions = async () => {
+      // Example dummy data
+      const data = [
+        { id: '1', title: 'General Chat' },
+        { id: '2', title: 'Spanish Practice' },
+      ];
+      setSessions(data);
+      if (!selectedSessionId && data.length) setSelectedSessionId(data[0].id);
+    };
+    fetchSessions();
+  }, []);
+
+  // Fetch messages when selectedSessionId changes
+  useEffect(() => {
+    if (!selectedSessionId) return;
+    const fetchMessages = async () => {
+      // Replace with real API call
+      const dummyMessages = [
+        { sender: 'bot', text: 'Hello! How can I help you today?' },
+        { sender: 'user', text: 'Hi! Can you help me practice English?' },
+      ];
+      setMessages(dummyMessages);
+    };
+    fetchMessages();
+  }, [selectedSessionId]);
+
+  // Scroll to bottom on messages update
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [xp, level]);
+  }, [messages]);
 
-  useEffect(() => {
-    listRef.current?.scrollTo({
-      top: listRef.current.scrollHeight,
-      behavior: 'smooth',
-    });
-  }, [messages, loading]);
-
+  // Send message handler
   const handleSend = async () => {
     if (!input.trim()) return;
-
-    const userMessage = {
-      sender: 'user',
-      text: input.trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessage = { sender: 'user', text: input.trim() };
+    setMessages((prev) => [...prev, newMessage]);
     setInput('');
     setLoading(true);
 
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/chat/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${auth.token}`,
-        },
-        body: JSON.stringify({
-          message: userMessage.text,
-        }),
-      });
-
-      const data = await response.json();
-      const aiMessage = {
-        sender: 'ai',
-        text: data.reply,
-        timestamp: new Date().toISOString(),
+    // Simulate bot response delay with typing animation
+    setTimeout(async () => {
+      // Simulate bot response from API (replace with real API call)
+      const botResponse = {
+        sender: 'bot',
+        text:
+          'Sure! Here is some **bold text**, _italic text_, `inline code`, and a list:\n\n- Item 1\n- Item 2\n- Item 3',
       };
-
-      setMessages((prev) => [...prev, aiMessage]);
-      setXp((prevXp) => prevXp + (data.xp || 10));
-    } catch (error) {
-      console.error('Chat error:', error);
-    } finally {
+      setMessages((prev) => [...prev, botResponse]);
       setLoading(false);
-    }
+      // Update XP and Level as needed (mock)
+      setXp((prev) => prev + 10);
+      if (xp + 10 >= 100) setLevel((l) => l + 1);
+    }, 1500);
   };
 
+  // Handle enter key send
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -89,82 +171,247 @@ const ChatPage = () => {
     }
   };
 
-  const renderMessage = (msg, index) => (
-    <ListItem
-      key={index}
-      sx={{
-        justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-      }}
-    >
-      <Box
-        sx={{
-          bgcolor: msg.sender === 'user' ? '#163a61' : '#0c2548',
-          color: 'white',
-          px: 2,
-          py: 1,
-          borderRadius: 2,
-          maxWidth: '70%',
-          whiteSpace: 'pre-wrap',
-        }}
-      >
-        {msg.text}
-      </Box>
-    </ListItem>
-  );
-
-  return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Grid container spacing={3}>
-        {/* Sidebar placeholder */}
-        <Grid item xs={12} md={3}>
-          <Paper
-            elevation={3}
+  // Render each chat message with markdown
+  const renderMessage = (msg, index) => {
+    const isUser = msg.sender === 'user';
+    return (
+      <Slide direction="up" in timeout={300} key={index}>
+        <ListItem
+          sx={{
+            display: 'flex',
+            justifyContent: isUser ? 'flex-end' : 'flex-start',
+            px: 0,
+            py: 1,
+          }}
+        >
+          {!isUser && (
+            <Avatar sx={{ bgcolor: '#0c2548', width: 32, height: 32, mr: 1 }}>
+              🤖
+            </Avatar>
+          )}
+          <Box
             sx={{
+              maxWidth: isMobile ? '85%' : '70%',
               p: 2,
-              height: '100%',
-              backgroundColor: '#0c2548',
-              color: 'white',
               borderRadius: 3,
+              bgcolor: isUser ? '#0c2548' : 'rgba(255, 255, 255, 0.08)',
+              color: isUser ? '#fff' : '#e0e0e0',
+              whiteSpace: 'pre-wrap',
+              boxShadow: 4,
+              backdropFilter: !isUser && 'blur(8px)',
+              border: !isUser && '1px solid rgba(255,255,255,0.1)',
+              fontSize: '0.95rem',
+              '& a': {
+                color: '#82aaff',
+                textDecoration: 'underline',
+              },
             }}
           >
-            <Typography variant="h6" gutterBottom>
-              Sessions
-            </Typography>
-            {/* You can insert session list here */}
-          </Paper>
+            <ReactMarkdown
+              children={msg.text}
+              components={{
+                a: ({ node, ...props }) => (
+                  <a {...props} target="_blank" rel="noopener noreferrer" />
+                ),
+                code: ({ node, inline, className, children, ...props }) => (
+                  <Box
+                    component="code"
+                    sx={{
+                      backgroundColor: '#212b45',
+                      color: '#82aaff',
+                      borderRadius: 1,
+                      px: 0.5,
+                      fontSize: '0.85rem',
+                      fontFamily: 'monospace',
+                    }}
+                    {...props}
+                  >
+                    {children}
+                  </Box>
+                ),
+                ul: ({ node, ...props }) => (
+                  <Box
+                    component="ul"
+                    sx={{ pl: 3, mb: 1 }}
+                    {...props}
+                  />
+                ),
+                li: ({ node, ...props }) => (
+                  <Box
+                    component="li"
+                    sx={{ mb: 0.5 }}
+                    {...props}
+                  />
+                ),
+              }}
+            />
+          </Box>
+          {isUser && (
+            <Avatar sx={{ bgcolor: '#0c2548', width: 32, height: 32, ml: 1 }}>
+              🧑
+            </Avatar>
+          )}
+        </ListItem>
+      </Slide>
+    );
+  };
+
+  return (
+    <Container
+      maxWidth="xl"
+      disableGutters
+      sx={{
+        height: '100vh',
+        mt: 8,
+        // Subtle background gradient for visual depth
+        background: 'linear-gradient(135deg, #0c2548 0%, #163a61 50%, #0c2548 100%)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Grid container sx={{ height: '100%' }}>
+        {/* Sidebar */}
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          md={3}
+          sx={{
+            bgcolor: '#0c2548',
+            color: '#fff',
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            overflowY: 'auto',
+            boxShadow: 3,
+          }}
+        >
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h6">Sessions</Typography>
+            <Tooltip title="New Session">
+              <IconButton size="small" color="inherit" onClick={() => setCreating(true)}>
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <List>
+            {sessions.map((session) => (
+              <ListItem
+                key={session.id}
+                secondaryAction={
+                  <>
+                    {editingSessionId === session.id ? (
+                      <IconButton
+                        edge="end"
+                        onClick={() => {
+                          // handleRenameSession here
+                          setEditingSessionId(null);
+                        }}
+                        sx={{ color: 'white' }}
+                      >
+                        <SaveIcon />
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        edge="end"
+                        onClick={() => {
+                          // handleDeleteSession here
+                          setSessions((prev) => prev.filter((s) => s.id !== session.id));
+                          if (selectedSessionId === session.id && sessions.length > 1) {
+                            setSelectedSessionId(sessions.find((s) => s.id !== session.id)?.id);
+                          }
+                        }}
+                        sx={{ color: 'white' }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </>
+                }
+                disablePadding
+              >
+                <ListItemButton
+                  selected={session.id === selectedSessionId}
+                  onClick={() => setSelectedSessionId(session.id)}
+                  sx={{
+                    '&.Mui-selected': {
+                      backgroundColor: '#163a61',
+                      '&:hover': { backgroundColor: '#1d477a' },
+                    },
+                  }}
+                >
+                  {editingSessionId === session.id ? (
+                    <TextField
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      size="small"
+                      variant="standard"
+                      fullWidth
+                      sx={{ input: { color: 'white' } }}
+                    />
+                  ) : (
+                    <ListItemText primary={session.title} />
+                  )}
+                </ListItemButton>
+                {editingSessionId !== session.id && (
+                  <Tooltip title="Rename">
+                    <IconButton
+                      onClick={() => {
+                        setEditingSessionId(session.id);
+                        setEditedTitle(session.title);
+                      }}
+                      sx={{ color: 'white' }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </ListItem>
+            ))}
+          </List>
         </Grid>
 
-        {/* Chat and XP */}
-        <Grid item xs={12} md={9}>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            mb={2}
-          >
-            <Typography variant="h5" fontWeight="bold" color="white">
-              Chat with AI
-            </Typography>
-            <Box display="flex" gap={1}>
-              <Chip
-                label={`Level ${level}`}
-                color="primary"
-                sx={{
-                  bgcolor: '#2196f3',
-                  color: 'white',
-                  fontWeight: 'bold',
-                }}
-              />
-              <Chip
-                label={`${xp % 100} XP`}
-                sx={{
-                  bgcolor: '#1e1e1e',
-                  color: 'white',
-                  fontWeight: 'bold',
-                }}
-              />
-            </Box>
-          </Box>
+        {/* Chat Area */}
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={9}
+          sx={{
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+          }}
+        >
+          <Typography variant="h4" align="center" color="#ffffff" mb={2} fontWeight="bold">
+            Chat with AI
+          </Typography>
+
+          <Box display="flex" justifyContent="center" flexDirection="column" alignItems="center" mb={2} px={2}>
+  <Typography variant="subtitle1" color="white">{`Level: ${level}`}</Typography>
+  <Box sx={{ width: '100%', maxWidth: 400 }}>
+    <LinearProgress
+      variant="determinate"
+      value={xp % 100}
+      sx={{
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: '#1d3557',
+        '& .MuiLinearProgress-bar': {
+          backgroundColor: '#00c853',
+          transition: 'width 0.4s ease-in-out',
+        },
+        mt: 1,
+      }}
+    />
+    <Typography variant="caption" color="white" align="center" display="block" mt={0.5}>
+      {`${xp % 100} / 100 XP`}
+    </Typography>
+  </Box>
+</Box>
 
           <Paper
             elevation={4}
@@ -173,134 +420,141 @@ const ChatPage = () => {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              bgcolor: 'rgba(255,255,255,0.03)',
-              borderRadius: 3,
+              bgcolor: 'rgba(255, 255, 255, 0.04)',
+              borderRadius: 4,
               border: '1px solid rgba(255,255,255,0.1)',
-              overflow: 'hidden',
               boxShadow: 6,
+              backdropFilter: 'blur(12px)',
+              p: 2,
+              overflow: 'hidden',
+              position: 'relative',
             }}
           >
-            {/* Chat messages */}
+            {loading && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 70,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  bgcolor: 'rgba(255, 255, 255, 0.12)',
+                  px: 2,
+                  py: 1,
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  boxShadow: 3,
+                  zIndex: 10,
+                }}
+              >
+                <TypingIndicator />
+                <Typography ml={1} color="#e0e0e0" fontStyle="italic" variant="body2">
+                  AI is typing...
+                </Typography>
+              </Box>
+            )}
+
             <List
               ref={listRef}
               sx={{
-                flexGrow: 1,
                 overflowY: 'auto',
-                px: 2,
-                py: 1,
+                flexGrow: 1,
+                pr: 1,
+                scrollbarWidth: 'thin',
+                '&::-webkit-scrollbar': {
+                  width: 6,
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: 'transparent',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  borderRadius: 3,
+                },
               }}
             >
               {messages.map(renderMessage)}
-              {loading && (
-                <ListItem>
-                  <TypingIndicator />
-                </ListItem>
-              )}
             </List>
 
-            {/* Input area */}
-            <Divider />
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                p: 2,
-              }}
-            >
+            <Divider sx={{ my: 1 }} />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TextField
+                placeholder="Type your message..."
+                multiline
+                maxRows={4}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                fullWidth
-                multiline
-                maxRows={3}
-                placeholder="Type your message..."
+                onKeyDown={handleKeyPress}
                 variant="outlined"
+                fullWidth
+                disabled={loading}
                 sx={{
-                  backgroundColor: '#fff',
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
                   borderRadius: 2,
+                  '& .MuiOutlinedInput-root': {
+                    color: 'white',
+                    '& fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.6)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#82aaff',
+                    },
+                  },
                 }}
               />
-              <IconButton
-                color="primary"
-                onClick={handleSend}
-                disabled={!input.trim()}
-                sx={{
-                  bgcolor: '#0c2548',
-                  color: 'white',
-                  '&:hover': { bgcolor: '#163a61' },
-                }}
-              >
-                <SendIcon />
-              </IconButton>
+              <Tooltip title="Send Message">
+                <span>
+                  <IconButton
+                    color="primary"
+                    onClick={handleSend}
+                    disabled={loading || !input.trim()}
+                    size="large"
+                  >
+                    {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
+                  </IconButton>
+                </span>
+              </Tooltip>
             </Box>
           </Paper>
-
-          {/* XP Progress Bar */}
-          <Box mt={2}>
-            <Typography variant="body2" color="white" gutterBottom>
-              XP Progress
-            </Typography>
-            <Box sx={{ position: 'relative', height: 20 }}>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: 20,
-                  bgcolor: '#1a1a1a',
-                  borderRadius: 10,
-                }}
-              />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  width: `${Math.min((xp % 100), 100)}%`,
-                  height: 20,
-                  bgcolor: '#2196f3',
-                  borderRadius: 10,
-                  transition: 'width 1s ease-in-out',
-                }}
-              />
-              <Typography
-                variant="caption"
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  color: 'white',
-                }}
-              >
-                {`${xp % 100} / 100 XP`}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Level up animation */}
-          <Box
-            sx={{
-              position: 'fixed',
-              top: 100,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              bgcolor: '#0c2548',
-              px: 3,
-              py: 1,
-              borderRadius: 3,
-              color: '#fff',
-              fontWeight: 'bold',
-              fontSize: '1.25rem',
-              boxShadow: 6,
-              zIndex: 1000,
-              opacity: xp % 100 === 0 && xp !== 0 ? 1 : 0,
-              transition: 'opacity 0.6s ease-in-out',
-            }}
-          >
-            🎉 Level Up! Now Level {level}
-          </Box>
         </Grid>
       </Grid>
+
+      {/* New Session Dialog */}
+      <Dialog open={creating} onClose={() => setCreating(false)}>
+        <DialogTitle>Create New Session</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Session Title"
+            fullWidth
+            value={newSessionTitle}
+            onChange={(e) => setNewSessionTitle(e.target.value)}
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCreating(false)}>Cancel</Button>
+          <Button
+            disabled={!newSessionTitle.trim()}
+            onClick={() => {
+              // Add new session to list
+              const newSession = {
+                id: Date.now().toString(),
+                title: newSessionTitle.trim(),
+              };
+              setSessions((prev) => [...prev, newSession]);
+              setSelectedSessionId(newSession.id);
+              setNewSessionTitle('');
+              setCreating(false);
+            }}
+          >
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
