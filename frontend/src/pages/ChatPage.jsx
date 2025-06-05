@@ -1,3 +1,4 @@
+// ChatPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
@@ -32,61 +33,47 @@ import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
 import AddIcon from '@mui/icons-material/Add';
 import ReactMarkdown from 'react-markdown';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-// Animated typing dots component
-const TypingIndicator = () => {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1,
-        pl: 1,
-      }}
-      aria-label="Bot is typing"
-    >
-      {[...Array(3)].map((_, i) => (
-        <Box
-          key={i}
-          component="span"
-          sx={{
-            width: 8,
-            height: 8,
-            bgcolor: '#0c2548',
-            borderRadius: '50%',
-            animation: `typingBounce 1.4s infinite`,
-            animationDelay: `${i * 0.3}s`,
-            display: 'inline-block',
-          }}
-        />
-      ))}
-
-      <style>
-        {`
-          @keyframes typingBounce {
-            0%, 80%, 100% {
-              transform: translateY(0);
-              opacity: 0.3;
-            }
-            40% {
-              transform: translateY(-6px);
-              opacity: 1;
-            }
+const TypingIndicator = () => (
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pl: 1 }} aria-label="Bot is typing">
+    {[...Array(3)].map((_, i) => (
+      <Box
+        key={i}
+        component="span"
+        sx={{
+          width: 8,
+          height: 8,
+          bgcolor: '#0c2548',
+          borderRadius: '50%',
+          animation: `typingBounce 1.4s infinite`,
+          animationDelay: `${i * 0.3}s`,
+          display: 'inline-block',
+        }}
+      />
+    ))}
+    <style>
+      {`
+        @keyframes typingBounce {
+          0%, 80%, 100% {
+            transform: translateY(0);
+            opacity: 0.3;
           }
-        `}
-      </style>
-    </Box>
-  );
-};
+          40% {
+            transform: translateY(-6px);
+            opacity: 1;
+          }
+        }
+      `}
+    </style>
+  </Box>
+);
 
 const ChatPage = () => {
   const { user } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // States for chat and sessions (same as before)
   const [sessions, setSessions] = useState([]);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -100,12 +87,8 @@ const ChatPage = () => {
   const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
-  // Fetch sessions on mount or when sessions change
   useEffect(() => {
-    // Fetch sessions and set selectedSessionId
-    // This is a placeholder; replace with your real fetch logic
     const fetchSessions = async () => {
-      // Example dummy data
       const data = [
         { id: '1', title: 'General Chat' },
         { id: '2', title: 'Spanish Practice' },
@@ -116,11 +99,9 @@ const ChatPage = () => {
     fetchSessions();
   }, []);
 
-  // Fetch messages when selectedSessionId changes
   useEffect(() => {
     if (!selectedSessionId) return;
     const fetchMessages = async () => {
-      // Replace with real API call
       const dummyMessages = [
         { sender: 'bot', text: 'Hello! How can I help you today?' },
         { sender: 'user', text: 'Hi! Can you help me practice English?' },
@@ -130,14 +111,12 @@ const ChatPage = () => {
     fetchMessages();
   }, [selectedSessionId]);
 
-  // Scroll to bottom on messages update
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // Send message handler
   const handleSend = async () => {
     if (!input.trim()) return;
     const newMessage = { sender: 'user', text: input.trim() };
@@ -145,9 +124,7 @@ const ChatPage = () => {
     setInput('');
     setLoading(true);
 
-    // Simulate bot response delay with typing animation
     setTimeout(async () => {
-      // Simulate bot response from API (replace with real API call)
       const botResponse = {
         sender: 'bot',
         text:
@@ -155,13 +132,11 @@ const ChatPage = () => {
       };
       setMessages((prev) => [...prev, botResponse]);
       setLoading(false);
-      // Update XP and Level as needed (mock)
       setXp((prev) => prev + 10);
       if (xp + 10 >= 100) setLevel((l) => l + 1);
     }, 1500);
   };
 
-  // Handle enter key send
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -169,7 +144,6 @@ const ChatPage = () => {
     }
   };
 
-  // Render each chat message with markdown
   const renderMessage = (msg, index) => {
     const isUser = msg.sender === 'user';
     return (
@@ -228,18 +202,10 @@ const ChatPage = () => {
                   </Box>
                 ),
                 ul: ({ node, ...props }) => (
-                  <Box
-                    component="ul"
-                    sx={{ pl: 3, mb: 1 }}
-                    {...props}
-                  />
+                  <Box component="ul" sx={{ pl: 3, mb: 1 }} {...props} />
                 ),
                 li: ({ node, ...props }) => (
-                  <Box
-                    component="li"
-                    sx={{ mb: 0.5 }}
-                    {...props}
-                  />
+                  <Box component="li" sx={{ mb: 0.5 }} {...props} />
                 ),
               }}
             />
@@ -261,7 +227,6 @@ const ChatPage = () => {
       sx={{
         height: '100vh',
         mt: 8,
-        // Subtle background gradient for visual depth
         background: 'linear-gradient(135deg, #0c2548 0%, #163a61 50%, #0c2548 100%)',
         overflow: 'hidden',
         display: 'flex',
@@ -270,120 +235,26 @@ const ChatPage = () => {
     >
       <Grid container sx={{ height: '100%' }}>
         {/* Sidebar */}
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          md={3}
-          sx={{
-            bgcolor: '#0c2548',
-            color: '#fff',
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            overflowY: 'auto',
-            boxShadow: 3,
-          }}
-        >
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6">Sessions</Typography>
-            <Tooltip title="New Session">
-              <IconButton size="small" color="inherit" onClick={() => setCreating(true)}>
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          <List>
-            {sessions.map((session) => (
-              <ListItem
-                key={session.id}
-                secondaryAction={
-                  <>
-                    {editingSessionId === session.id ? (
-                      <IconButton
-                        edge="end"
-                        onClick={() => {
-                          // handleRenameSession here
-                          setEditingSessionId(null);
-                        }}
-                        sx={{ color: 'white' }}
-                      >
-                        <SaveIcon />
-                      </IconButton>
-                    ) : (
-                      <IconButton
-                        edge="end"
-                        onClick={() => {
-                          // handleDeleteSession here
-                          setSessions((prev) => prev.filter((s) => s.id !== session.id));
-                          if (selectedSessionId === session.id && sessions.length > 1) {
-                            setSelectedSessionId(sessions.find((s) => s.id !== session.id)?.id);
-                          }
-                        }}
-                        sx={{ color: 'white' }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
-                  </>
-                }
-                disablePadding
-              >
-                <ListItemButton
-                  selected={session.id === selectedSessionId}
-                  onClick={() => setSelectedSessionId(session.id)}
-                  sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: '#163a61',
-                      '&:hover': { backgroundColor: '#1d477a' },
-                    },
-                  }}
-                >
-                  {editingSessionId === session.id ? (
-                    <TextField
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      size="small"
-                      variant="standard"
-                      fullWidth
-                      sx={{ input: { color: 'white' } }}
-                    />
-                  ) : (
-                    <ListItemText primary={session.title} />
-                  )}
-                </ListItemButton>
-                {editingSessionId !== session.id && (
-                  <Tooltip title="Rename">
-                    <IconButton
-                      onClick={() => {
-                        setEditingSessionId(session.id);
-                        setEditedTitle(session.title);
-                      }}
-                      sx={{ color: 'white' }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </ListItem>
-            ))}
-          </List>
+        <Grid item xs={12} sm={4} md={3} sx={{
+          bgcolor: '#0c2548',
+          color: '#fff',
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          overflowY: 'auto',
+          boxShadow: 3,
+        }}>
+          {/* Sidebar content here... */}
         </Grid>
 
         {/* Chat Area */}
-        <Grid
-          item
-          xs={12}
-          sm={8}
-          md={9}
-          sx={{
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-          }}
-        >
+        <Grid item xs={12} sm={8} md={9} sx={{
+          p: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+        }}>
           <Typography variant="h4" align="center" color="#0c2548" mb={2} fontWeight="bold">
             Chat with AI
           </Typography>
@@ -397,144 +268,42 @@ const ChatPage = () => {
             elevation={4}
             sx={{
               flexGrow: 1,
+              mb: 2,
+              overflowY: 'auto',
+              p: 2,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
-              bgcolor: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: 4,
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: 6,
-              backdropFilter: 'blur(12px)',
-              p: 2,
-              overflow: 'hidden',
-              position: 'relative',
+              bgcolor: 'rgba(255, 255, 255, 0.06)',
+              borderRadius: 3,
+              maxHeight: 'calc(100vh - 250px)', // reduced height
             }}
+            ref={listRef}
           >
-            {loading && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 70,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  bgcolor: 'rgba(255, 255, 255, 0.12)',
-                  px: 2,
-                  py: 1,
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  boxShadow: 3,
-                  zIndex: 10,
-                }}
-              >
-                <TypingIndicator />
-                <Typography ml={1} color="#e0e0e0" fontStyle="italic" variant="body2">
-                  AI is typing...
-                </Typography>
-              </Box>
-            )}
-
-            <List
-              ref={listRef}
-              sx={{
-                overflowY: 'auto',
-                flexGrow: 1,
-                pr: 1,
-                scrollbarWidth: 'thin',
-                '&::-webkit-scrollbar': {
-                  width: 6,
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: 'transparent',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  borderRadius: 3,
-                },
-              }}
-            >
-              {messages.map(renderMessage)}
-            </List>
-
-            <Divider sx={{ my: 1 }} />
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TextField
-                placeholder="Type your message..."
-                multiline
-                maxRows={4}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyPress}
-                variant="outlined"
-                fullWidth
-                disabled={loading}
-                sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: 2,
-                  '& .MuiOutlinedInput-root': {
-                    color: 'white',
-                    '& fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.3)',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.6)',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#82aaff',
-                    },
-                  },
-                }}
-              />
-              <Tooltip title="Send Message">
-                <span>
-                  <IconButton
-                    color="primary"
-                    onClick={handleSend}
-                    disabled={loading || !input.trim()}
-                    size="large"
-                  >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </Box>
+            {messages.map((msg, i) => renderMessage(msg, i))}
+            {loading && <TypingIndicator />}
           </Paper>
+
+          <Box display="flex" gap={1} alignItems="center">
+            <TextField
+              fullWidth
+              multiline
+              maxRows={4}
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              variant="outlined"
+              sx={{
+                backgroundColor: '#fff',
+                borderRadius: 2,
+              }}
+            />
+            <IconButton color="primary" onClick={handleSend}>
+              <SendIcon />
+            </IconButton>
+          </Box>
         </Grid>
       </Grid>
-
-      {/* New Session Dialog */}
-      <Dialog open={creating} onClose={() => setCreating(false)}>
-        <DialogTitle>Create New Session</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Session Title"
-            fullWidth
-            value={newSessionTitle}
-            onChange={(e) => setNewSessionTitle(e.target.value)}
-            autoFocus
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreating(false)}>Cancel</Button>
-          <Button
-            disabled={!newSessionTitle.trim()}
-            onClick={() => {
-              // Add new session to list
-              const newSession = {
-                id: Date.now().toString(),
-                title: newSessionTitle.trim(),
-              };
-              setSessions((prev) => [...prev, newSession]);
-              setSelectedSessionId(newSession.id);
-              setNewSessionTitle('');
-              setCreating(false);
-            }}
-          >
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 };
