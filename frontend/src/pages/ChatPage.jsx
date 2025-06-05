@@ -15,7 +15,7 @@ import {
   Avatar,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 import TypingIndicator from '../components/TypingIndicator';
 
 const ChatPage = () => {
