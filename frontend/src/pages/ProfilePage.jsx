@@ -133,142 +133,175 @@ const ProfilePage = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 10, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 3, sm: 4 } }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} sm={4} textAlign="center">
-            <Box position="relative" display="inline-block">
-              <Avatar
-                sx={{
-                  width: 100,
-                  height: 100,
-                  fontSize: 36,
-                  margin: '0 auto',
-                  bgcolor: theme.palette.primary.main,
-                }}
-                src={avatarPreview}
-              >
-                {getInitials(user?.username)}
-              </Avatar>
-              <input
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="upload-avatar"
-                type="file"
-                onChange={handleAvatarUpload}
-              />
-              <label htmlFor="upload-avatar">
-                <IconButton component="span" sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-                  <PhotoCamera />
-                </IconButton>
-              </label>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={8}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
-              {user?.username}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              {user?.email || 'No email provided'}
-            </Typography>
-            <Box mt={2}>
-              <Button
-                variant="contained"
-                color={editing ? 'success' : 'primary'}
-                onClick={editing ? handleSubmit : () => setEditing(true)}
-              >
-                {editing ? 'Save' : 'Edit Profile'}
-              </Button>
-              {editing && (
-                <Button sx={{ ml: 2 }} variant="outlined" color="secondary" onClick={() => setEditing(false)}>
-                  Cancel
-                </Button>
-              )}
-              <Button sx={{ ml: 2 }} variant="text" onClick={() => setPasswordDialogOpen(true)}>
-                Change Password
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-
-        <Box mt={4}>
-          <TextField
-            fullWidth
-            label="Preferred Language"
-            name="preferred_language"
-            value={formData.preferred_language}
-            onChange={handleInputChange}
-            margin="normal"
-            variant="outlined"
-            InputProps={{ readOnly: !editing }}
-          />
-          <TextField
-            fullWidth
-            label="Language Level"
-            name="language_level"
-            value={formData.language_level}
-            onChange={handleInputChange}
-            margin="normal"
-            variant="outlined"
-            InputProps={{ readOnly: !editing }}
-          />
-          <TextField
-            fullWidth
-            label="Level"
-            value={user?.current_level ?? 1}
-            margin="normal"
-            variant="outlined"
-            InputProps={{ readOnly: true }}
-          />
-          <TextField
-            fullWidth
-            label="XP"
-            value={user?.current_xp ?? 0}
-            margin="normal"
-            variant="outlined"
-            InputProps={{ readOnly: true }}
-          />
-        </Box>
-      </Paper>
-
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={3000}
-        onClose={() => setSnack((prev) => ({ ...prev, open: false }))}
+  <Box
+    sx={{
+      minHeight: '100vh',
+      background: `linear-gradient(to bottom right, ${theme.palette.background.default}, ${theme.palette.background.paper})`,
+      pt: 10,
+      pb: 6,
+      px: { xs: 2, sm: 4 },
+    }}
+  >
+    <Container maxWidth="md">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: 'center',
+          gap: 4,
+          mb: 4,
+        }}
       >
-        <Alert severity={snack.severity} onClose={() => setSnack((prev) => ({ ...prev, open: false }))}>
-          {snack.message}
-        </Alert>
-      </Snackbar>
+        <Box position="relative">
+          <Avatar
+            sx={{
+              width: 120,
+              height: 120,
+              fontSize: 40,
+              bgcolor: theme.palette.primary.main,
+            }}
+            src={avatarPreview}
+          >
+            {getInitials(user?.username)}
+          </Avatar>
+          <input
+            accept="image/*"
+            style={{ display: 'none' }}
+            id="upload-avatar"
+            type="file"
+            onChange={handleAvatarUpload}
+          />
+          <label htmlFor="upload-avatar">
+            <IconButton
+              component="span"
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                bgcolor: 'background.paper',
+                boxShadow: 1,
+              }}
+            >
+              <PhotoCamera fontSize="small" />
+            </IconButton>
+          </label>
+        </Box>
 
-      <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
-        <DialogTitle>Change Password</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Current Password"
-            type="password"
-            value={passwordData.current_password}
-            onChange={(e) => setPasswordData((p) => ({ ...p, current_password: e.target.value }))}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="New Password"
-            type="password"
-            value={passwordData.new_password}
-            onChange={(e) => setPasswordData((p) => ({ ...p, new_password: e.target.value }))}
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handlePasswordChange} variant="contained" color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
+        <Box flex={1}>
+          <Typography variant="h4" fontWeight={700} gutterBottom>
+            {user?.username}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {user?.email || 'No email provided'}
+          </Typography>
+
+          <Box mt={3} display="flex" flexWrap="wrap" gap={2}>
+            <Button
+              variant="contained"
+              color={editing ? 'success' : 'primary'}
+              onClick={editing ? handleSubmit : () => setEditing(true)}
+            >
+              {editing ? 'Save' : 'Edit Profile'}
+            </Button>
+            {editing && (
+              <Button variant="outlined" color="secondary" onClick={() => setEditing(false)}>
+                Cancel
+              </Button>
+            )}
+            <Button variant="text" onClick={() => setPasswordDialogOpen(true)}>
+              Change Password
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+
+      <Box
+        component="form"
+        noValidate
+        autoComplete="off"
+        sx={{
+          display: 'grid',
+          gap: 3,
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+          background: theme.palette.background.paper,
+          borderRadius: 3,
+          p: 3,
+          boxShadow: 3,
+        }}
+      >
+        <TextField
+          fullWidth
+          label="Preferred Language"
+          name="preferred_language"
+          value={formData.preferred_language}
+          onChange={handleInputChange}
+          variant="outlined"
+          InputProps={{ readOnly: !editing }}
+        />
+        <TextField
+          fullWidth
+          label="Language Level"
+          name="language_level"
+          value={formData.language_level}
+          onChange={handleInputChange}
+          variant="outlined"
+          InputProps={{ readOnly: !editing }}
+        />
+        <TextField
+          fullWidth
+          label="Level"
+          value={user?.current_level ?? 1}
+          variant="outlined"
+          InputProps={{ readOnly: true }}
+        />
+        <TextField
+          fullWidth
+          label="XP"
+          value={user?.current_xp ?? 0}
+          variant="outlined"
+          InputProps={{ readOnly: true }}
+        />
+      </Box>
     </Container>
+
+    <Snackbar
+      open={snack.open}
+      autoHideDuration={3000}
+      onClose={() => setSnack((prev) => ({ ...prev, open: false }))}
+    >
+      <Alert severity={snack.severity} onClose={() => setSnack((prev) => ({ ...prev, open: false }))}>
+        {snack.message}
+      </Alert>
+    </Snackbar>
+
+    <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
+      <DialogTitle>Change Password</DialogTitle>
+      <DialogContent>
+        <TextField
+          fullWidth
+          label="Current Password"
+          type="password"
+          value={passwordData.current_password}
+          onChange={(e) => setPasswordData((p) => ({ ...p, current_password: e.target.value }))}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="New Password"
+          type="password"
+          value={passwordData.new_password}
+          onChange={(e) => setPasswordData((p) => ({ ...p, new_password: e.target.value }))}
+          margin="normal"
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
+        <Button onClick={handlePasswordChange} variant="contained" color="primary">
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </Box>
   );
 };
 
