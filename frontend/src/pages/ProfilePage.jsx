@@ -21,10 +21,8 @@ import {
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import axios from '../api/axios';
-import { useTranslation } from 'react-i18next';
 
 const ProfilePage = () => {
-  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -83,11 +81,11 @@ const ProfilePage = () => {
       await axios.patch('/profile/edit/', formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSnack({ open: true, message: t('profile.updated'), severity: 'success' });
+      setSnack({ open: true, message: 'Profile updated successfully.', severity: 'success' });
       setEditing(false);
     } catch (error) {
       console.error(error);
-      setSnack({ open: true, message: t('profile.updateFailed'), severity: 'error' });
+      setSnack({ open: true, message: 'Failed to update profile.', severity: 'error' });
     }
   };
 
@@ -98,17 +96,17 @@ const ProfilePage = () => {
     formData.append('avatar', file);
 
     try {
-      const res = await axios.post('/profile/upload-avatar/', formData, {
+      await axios.post('/profile/upload-avatar/', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
       setAvatarPreview(URL.createObjectURL(file));
-      setSnack({ open: true, message: t('profile.avatarUploaded'), severity: 'success' });
+      setSnack({ open: true, message: 'Avatar uploaded successfully.', severity: 'success' });
     } catch (error) {
       console.error(error);
-      setSnack({ open: true, message: t('profile.avatarFailed'), severity: 'error' });
+      setSnack({ open: true, message: 'Failed to upload avatar.', severity: 'error' });
     }
   };
 
@@ -117,12 +115,12 @@ const ProfilePage = () => {
       await axios.post('/profile/change-password/', passwordData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSnack({ open: true, message: t('profile.passwordChanged'), severity: 'success' });
+      setSnack({ open: true, message: 'Password changed successfully.', severity: 'success' });
       setPasswordDialogOpen(false);
       setPasswordData({ current_password: '', new_password: '' });
     } catch (error) {
       console.error(error);
-      setSnack({ open: true, message: t('profile.passwordChangeFailed'), severity: 'error' });
+      setSnack({ open: true, message: 'Failed to change password.', severity: 'error' });
     }
   };
 
@@ -171,7 +169,7 @@ const ProfilePage = () => {
               {user?.username}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              {user?.email || t('profile.noEmail')}
+              {user?.email || 'No email provided'}
             </Typography>
             <Box mt={2}>
               <Button
@@ -179,15 +177,15 @@ const ProfilePage = () => {
                 color={editing ? 'success' : 'primary'}
                 onClick={editing ? handleSubmit : () => setEditing(true)}
               >
-                {editing ? t('profile.save') : t('profile.edit')}
+                {editing ? 'Save' : 'Edit Profile'}
               </Button>
               {editing && (
                 <Button sx={{ ml: 2 }} variant="outlined" color="secondary" onClick={() => setEditing(false)}>
-                  {t('profile.cancel')}
+                  Cancel
                 </Button>
               )}
               <Button sx={{ ml: 2 }} variant="text" onClick={() => setPasswordDialogOpen(true)}>
-                {t('profile.changePassword')}
+                Change Password
               </Button>
             </Box>
           </Grid>
@@ -196,7 +194,7 @@ const ProfilePage = () => {
         <Box mt={4}>
           <TextField
             fullWidth
-            label={t('profile.preferredLanguage')}
+            label="Preferred Language"
             name="preferred_language"
             value={formData.preferred_language}
             onChange={handleInputChange}
@@ -206,7 +204,7 @@ const ProfilePage = () => {
           />
           <TextField
             fullWidth
-            label={t('profile.languageLevel')}
+            label="Language Level"
             name="language_level"
             value={formData.language_level}
             onChange={handleInputChange}
@@ -216,7 +214,7 @@ const ProfilePage = () => {
           />
           <TextField
             fullWidth
-            label={t('profile.level')}
+            label="Level"
             value={user?.current_level ?? 1}
             margin="normal"
             variant="outlined"
@@ -244,11 +242,11 @@ const ProfilePage = () => {
       </Snackbar>
 
       <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
-        <DialogTitle>{t('profile.changePassword')}</DialogTitle>
+        <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
-            label={t('profile.currentPassword')}
+            label="Current Password"
             type="password"
             value={passwordData.current_password}
             onChange={(e) => setPasswordData((p) => ({ ...p, current_password: e.target.value }))}
@@ -256,7 +254,7 @@ const ProfilePage = () => {
           />
           <TextField
             fullWidth
-            label={t('profile.newPassword')}
+            label="New Password"
             type="password"
             value={passwordData.new_password}
             onChange={(e) => setPasswordData((p) => ({ ...p, new_password: e.target.value }))}
@@ -264,9 +262,9 @@ const ProfilePage = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPasswordDialogOpen(false)}>{t('profile.cancel')}</Button>
+          <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
           <Button onClick={handlePasswordChange} variant="contained" color="primary">
-            {t('profile.submit')}
+            Submit
           </Button>
         </DialogActions>
       </Dialog>

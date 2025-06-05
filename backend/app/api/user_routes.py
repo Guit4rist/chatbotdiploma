@@ -1,11 +1,14 @@
 # app/api/user_routes.py
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Body
 from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate, UserOut
 from app.services.auth import hash_password as get_password_hash
+from app.api.auth_routes import get_current_user
+import shutil
+import os
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -49,3 +52,32 @@ def update_user(user_id: int, update: UserUpdate, db: Session = Depends(get_db))
     db.commit()
     db.refresh(user)
     return user
+
+AVATAR_UPLOAD_DIR = "static/avatars"
+
+@router.post("/profile/avatar/")
+def upload_avatar(file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if file.content_type not in ["image/jpeg", "image/png"]:
+        raise HTTPException(status_code=400, detail="Invalid file type")
+    
+    filename = f"user_{current_user.id}_{file.filename}"
+    filepath = os.path.join(AVATAR_UPLOAD_DIR, filename)
+
+    os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)
+
+    with open(filepath, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    current_user.avatar_url = filepath
+    db.commit()
+    return {"avatar_url": filepath}
+
+@router.post("/profile/set-language/")
+def set_language(
+    preferred_language: str = Body(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    current_user.preferred_language = preferred_language
+    db.commit()
+    return {"message": "Language updated", "preferred_language": preferred_language}
