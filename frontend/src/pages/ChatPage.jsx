@@ -42,8 +42,8 @@ const TypingIndicator = () => {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 1,
-        pl: 1,
+        gap: 0.5,
+        pl: 0.5,
       }}
       aria-label="Bot is typing"
     >
@@ -52,8 +52,8 @@ const TypingIndicator = () => {
           key={i}
           component="span"
           sx={{
-            width: 8,
-            height: 8,
+            width: 6,
+            height: 6,
             bgcolor: '#0c2548',
             borderRadius: '50%',
             animation: `typingBounce 1.4s infinite`,
@@ -102,10 +102,7 @@ const ChatPage = () => {
 
   // Fetch sessions on mount or when sessions change
   useEffect(() => {
-    // Fetch sessions and set selectedSessionId
-    // This is a placeholder; replace with your real fetch logic
     const fetchSessions = async () => {
-      // Example dummy data
       const data = [
         { id: '1', title: 'General Chat' },
         { id: '2', title: 'Spanish Practice' },
@@ -120,7 +117,6 @@ const ChatPage = () => {
   useEffect(() => {
     if (!selectedSessionId) return;
     const fetchMessages = async () => {
-      // Replace with real API call
       const dummyMessages = [
         { sender: 'bot', text: 'Hello! How can I help you today?' },
         { sender: 'user', text: 'Hi! Can you help me practice English?' },
@@ -145,9 +141,7 @@ const ChatPage = () => {
     setInput('');
     setLoading(true);
 
-    // Simulate bot response delay with typing animation
     setTimeout(async () => {
-      // Simulate bot response from API (replace with real API call)
       const botResponse = {
         sender: 'bot',
         text:
@@ -155,7 +149,6 @@ const ChatPage = () => {
       };
       setMessages((prev) => [...prev, botResponse]);
       setLoading(false);
-      // Update XP and Level as needed (mock)
       setXp((prev) => prev + 10);
       if (xp + 10 >= 100) setLevel((l) => l + 1);
     }, 1500);
@@ -179,26 +172,26 @@ const ChatPage = () => {
             display: 'flex',
             justifyContent: isUser ? 'flex-end' : 'flex-start',
             px: 0,
-            py: 1,
+            py: 0.5,
           }}
         >
           {!isUser && (
-            <Avatar sx={{ bgcolor: '#0c2548', width: 32, height: 32, mr: 1 }}>
+            <Avatar sx={{ bgcolor: '#0c2548', width: 24, height: 24, mr: 0.75 }}>
               🤖
             </Avatar>
           )}
           <Box
             sx={{
-              maxWidth: isMobile ? '85%' : '70%',
-              p: 2,
-              borderRadius: 3,
+              maxWidth: isMobile ? '80%' : '65%',
+              p: 1.5,
+              borderRadius: 2.5,
               bgcolor: isUser ? '#0c2548' : 'rgba(255, 255, 255, 0.08)',
               color: isUser ? '#fff' : '#e0e0e0',
               whiteSpace: 'pre-wrap',
-              boxShadow: 4,
-              backdropFilter: !isUser && 'blur(8px)',
+              boxShadow: 3,
+              backdropFilter: !isUser && 'blur(6px)',
               border: !isUser && '1px solid rgba(255,255,255,0.1)',
-              fontSize: '0.95rem',
+              fontSize: '0.85rem',
               '& a': {
                 color: '#82aaff',
                 textDecoration: 'underline',
@@ -219,7 +212,7 @@ const ChatPage = () => {
                       color: '#82aaff',
                       borderRadius: 1,
                       px: 0.5,
-                      fontSize: '0.85rem',
+                      fontSize: '0.75rem',
                       fontFamily: 'monospace',
                     }}
                     {...props}
@@ -227,25 +220,13 @@ const ChatPage = () => {
                     {children}
                   </Box>
                 ),
-                ul: ({ node, ...props }) => (
-                  <Box
-                    component="ul"
-                    sx={{ pl: 3, mb: 1 }}
-                    {...props}
-                  />
-                ),
-                li: ({ node, ...props }) => (
-                  <Box
-                    component="li"
-                    sx={{ mb: 0.5 }}
-                    {...props}
-                  />
-                ),
+                ul: ({ node, ...props }) => <Box component="ul" sx={{ pl: 2.5, mb: 0.5 }} {...props} />,
+                li: ({ node, ...props }) => <Box component="li" sx={{ mb: 0.25 }} {...props} />,
               }}
             />
           </Box>
           {isUser && (
-            <Avatar sx={{ bgcolor: '#0c2548', width: 32, height: 32, ml: 1 }}>
+            <Avatar sx={{ bgcolor: '#0c2548', width: 24, height: 24, ml: 0.75 }}>
               🧑
             </Avatar>
           )}
@@ -260,8 +241,7 @@ const ChatPage = () => {
       disableGutters
       sx={{
         height: '100vh',
-        mt: 8,
-        // Subtle background gradient for visual depth
+        mt: 7,
         background: 'linear-gradient(135deg, #0c2548 0%, #163a61 50%, #0c2548 100%)',
         overflow: 'hidden',
         display: 'flex',
@@ -278,7 +258,7 @@ const ChatPage = () => {
           sx={{
             bgcolor: '#0c2548',
             color: '#fff',
-            p: 2,
+            p: 1.5,
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
@@ -286,250 +266,276 @@ const ChatPage = () => {
             boxShadow: 3,
           }}
         >
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6">Sessions</Typography>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+              Sessions
+            </Typography>
             <Tooltip title="New Session">
               <IconButton size="small" color="inherit" onClick={() => setCreating(true)}>
-                <AddIcon />
+                <AddIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </Box>
-          <List>
+          <List
+            dense
+            sx={{ overflowY: 'auto', maxHeight: 'calc(100% - 80px)' }}
+            aria-label="Chat sessions list"
+          >
             {sessions.map((session) => (
               <ListItem
                 key={session.id}
+                disablePadding
                 secondaryAction={
                   <>
                     {editingSessionId === session.id ? (
-                      <IconButton
-                        edge="end"
-                        onClick={() => {
-                          // handleRenameSession here
-                          setEditingSessionId(null);
-                        }}
-                        sx={{ color: 'white' }}
-                      >
-                        <SaveIcon />
-                      </IconButton>
+                      <>
+                        <Tooltip title="Save">
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => {
+                              setEditingSessionId(null);
+                              // Save logic here
+                            }}
+                            aria-label={`Save session title ${editedTitle}`}
+                          >
+                            <SaveIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </>
                     ) : (
-                      <IconButton
-                        edge="end"
-                        onClick={() => {
-                          // handleDeleteSession here
-                          setSessions((prev) => prev.filter((s) => s.id !== session.id));
-                          if (selectedSessionId === session.id && sessions.length > 1) {
-                            setSelectedSessionId(sessions.find((s) => s.id !== session.id)?.id);
-                          }
-                        }}
-                        sx={{ color: 'white' }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                      <>
+                        <Tooltip title="Edit">
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => {
+                              setEditingSessionId(session.id);
+                              setEditedTitle(session.title);
+                            }}
+                            aria-label={`Edit session ${session.title}`}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => {
+                              setSessions((prev) =>
+                                prev.filter((s) => s.id !== session.id)
+                              );
+                              if (selectedSessionId === session.id)
+                                setSelectedSessionId(
+                                  sessions.length > 1 ? sessions[0].id : null
+                                );
+                            }}
+                            aria-label={`Delete session ${session.title}`}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </>
                     )}
                   </>
                 }
-                disablePadding
+                sx={{
+                  bgcolor:
+                    selectedSessionId === session.id
+                      ? 'rgba(255, 255, 255, 0.12)'
+                      : 'transparent',
+                  borderRadius: 1,
+                  mb: 0.5,
+                }}
               >
-                <ListItemButton
-                  selected={session.id === selectedSessionId}
-                  onClick={() => setSelectedSessionId(session.id)}
-                  sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: '#163a61',
-                      '&:hover': { backgroundColor: '#1d477a' },
-                    },
-                  }}
-                >
-                  {editingSessionId === session.id ? (
-                    <TextField
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      size="small"
-                      variant="standard"
-                      fullWidth
-                      sx={{ input: { color: 'white' } }}
-                    />
-                  ) : (
-                    <ListItemText primary={session.title} />
-                  )}
-                </ListItemButton>
-                {editingSessionId !== session.id && (
-                  <Tooltip title="Rename">
-                    <IconButton
-                      onClick={() => {
-                        setEditingSessionId(session.id);
-                        setEditedTitle(session.title);
+                {editingSessionId === session.id ? (
+                  <TextField
+                    variant="standard"
+                    size="small"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        setEditingSessionId(null);
+                        // Save logic here
+                      }
+                    }}
+                    inputProps={{ 'aria-label': 'Edit session title' }}
+                    sx={{ color: '#fff' }}
+                    fullWidth
+                  />
+                ) : (
+                  <ListItemButton
+                    onClick={() => setSelectedSessionId(session.id)}
+                    sx={{ pl: 1.5 }}
+                    aria-current={selectedSessionId === session.id ? 'true' : undefined}
+                  >
+                    <ListItemText
+                      primary={session.title}
+                      primaryTypographyProps={{
+                        noWrap: true,
+                        fontSize: '0.85rem',
+                        fontWeight: selectedSessionId === session.id ? 'bold' : 'normal',
                       }}
-                      sx={{ color: 'white' }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                    />
+                  </ListItemButton>
                 )}
               </ListItem>
             ))}
           </List>
+
+          {/* XP and Level */}
+          <Box mt="auto" pt={1} pb={0.5} textAlign="center">
+            <Chip
+              label={`Level ${level} — XP ${xp}/100`}
+              color="primary"
+              size="small"
+              sx={{
+                fontWeight: 'bold',
+                fontSize: '0.75rem',
+                bgcolor: 'rgba(255,255,255,0.15)',
+              }}
+              aria-label="User experience level and points"
+            />
+          </Box>
         </Grid>
 
-        {/* Chat Area */}
+        {/* Main chat area */}
         <Grid
           item
           xs={12}
           sm={8}
           md={9}
           sx={{
-            p: 3,
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
+            bgcolor: '#163a61',
+            p: isMobile ? 1 : 2,
           }}
         >
-          <Typography variant="h4" align="center" color="#0c2548" mb={2} fontWeight="bold">
-            Chat with AI
-          </Typography>
-
-          <Box display="flex" justifyContent="center" gap={2} mb={2}>
-            <Chip label={`Level: ${level}`} color="primary" variant="outlined" />
-            <Chip label={`XP: ${xp}`} color="secondary" variant="outlined" />
-          </Box>
-
           <Paper
-            elevation={4}
+            ref={listRef}
             sx={{
               flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              bgcolor: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: 4,
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: 6,
-              backdropFilter: 'blur(12px)',
-              p: 2,
-              overflow: 'hidden',
-              position: 'relative',
+              overflowY: 'auto',
+              p: 1,
+              bgcolor: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: 2,
+              boxShadow: 1,
+              mb: 1,
             }}
+            aria-live="polite"
+            aria-relevant="additions"
           >
-            {loading && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 70,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  bgcolor: 'rgba(255, 255, 255, 0.12)',
-                  px: 2,
-                  py: 1,
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  boxShadow: 3,
-                  zIndex: 10,
-                }}
-              >
-                <TypingIndicator />
-                <Typography ml={1} color="#e0e0e0" fontStyle="italic" variant="body2">
-                  AI is typing...
-                </Typography>
-              </Box>
-            )}
-
-            <List
-              ref={listRef}
-              sx={{
-                overflowY: 'auto',
-                flexGrow: 1,
-                pr: 1,
-                scrollbarWidth: 'thin',
-                '&::-webkit-scrollbar': {
-                  width: 6,
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: 'transparent',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  borderRadius: 3,
-                },
-              }}
-            >
-              {messages.map(renderMessage)}
-            </List>
-
-            <Divider sx={{ my: 1 }} />
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TextField
-                placeholder="Type your message..."
-                multiline
-                maxRows={4}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyPress}
-                variant="outlined"
-                fullWidth
-                disabled={loading}
-                sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: 2,
-                  '& .MuiOutlinedInput-root': {
-                    color: 'white',
-                    '& fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.3)',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.6)',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#82aaff',
-                    },
-                  },
-                }}
-              />
-              <Tooltip title="Send Message">
-                <span>
-                  <IconButton
-                    color="primary"
-                    onClick={handleSend}
-                    disabled={loading || !input.trim()}
-                    size="large"
+            <List dense disablePadding>
+              {messages.map((msg, i) => renderMessage(msg, i))}
+              {loading && (
+                <ListItem
+                  sx={{
+                    justifyContent: 'flex-start',
+                    px: 0,
+                    py: 0.5,
+                  }}
+                >
+                  <Avatar
+                    sx={{ bgcolor: '#0c2548', width: 24, height: 24, mr: 0.75 }}
+                    aria-hidden="true"
                   >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </Box>
+                    🤖
+                  </Avatar>
+                  <Typography
+                    sx={{ fontSize: '0.85rem', color: '#e0e0e0' }}
+                    aria-label="Bot is typing"
+                  >
+                    <TypingIndicator />
+                  </Typography>
+                </ListItem>
+              )}
+            </List>
           </Paper>
+
+          <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+            <Grid container spacing={1} alignItems="center">
+              <Grid item xs>
+                <TextField
+                  fullWidth
+                  multiline
+                  maxRows={4}
+                  placeholder="Type your message..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    bgcolor: '#fff',
+                    borderRadius: 2,
+                    '& .MuiOutlinedInput-root': {
+                      fontSize: '0.9rem',
+                    },
+                  }}
+                  inputProps={{ 'aria-label': 'Chat input field' }}
+                />
+              </Grid>
+              <Grid item>
+                <Tooltip title="Send message">
+                  <span>
+                    <IconButton
+                      color="primary"
+                      type="submit"
+                      disabled={loading || !input.trim()}
+                      aria-label="Send message"
+                      size="large"
+                    >
+                      <SendIcon fontSize="small" />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
       </Grid>
 
-      {/* New Session Dialog */}
-      <Dialog open={creating} onClose={() => setCreating(false)}>
-        <DialogTitle>Create New Session</DialogTitle>
+      {/* New session dialog */}
+      <Dialog open={creating} onClose={() => setCreating(false)} aria-labelledby="new-session-dialog">
+        <DialogTitle id="new-session-dialog" sx={{ fontSize: '1.25rem' }}>
+          Create New Session
+        </DialogTitle>
         <DialogContent>
           <TextField
+            autoFocus
+            margin="dense"
             label="Session Title"
             fullWidth
+            variant="standard"
             value={newSessionTitle}
             onChange={(e) => setNewSessionTitle(e.target.value)}
-            autoFocus
+            inputProps={{ 'aria-label': 'New session title' }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreating(false)}>Cancel</Button>
+          <Button onClick={() => setCreating(false)} size="small" aria-label="Cancel new session">
+            Cancel
+          </Button>
           <Button
-            disabled={!newSessionTitle.trim()}
             onClick={() => {
-              // Add new session to list
-              const newSession = {
-                id: Date.now().toString(),
-                title: newSessionTitle.trim(),
-              };
-              setSessions((prev) => [...prev, newSession]);
-              setSelectedSessionId(newSession.id);
-              setNewSessionTitle('');
-              setCreating(false);
+              if (newSessionTitle.trim()) {
+                const newSession = {
+                  id: (sessions.length + 1).toString(),
+                  title: newSessionTitle.trim(),
+                };
+                setSessions((prev) => [...prev, newSession]);
+                setSelectedSessionId(newSession.id);
+                setNewSessionTitle('');
+                setCreating(false);
+              }
             }}
+            size="small"
+            disabled={!newSessionTitle.trim()}
+            aria-label="Create new session"
           >
             Create
           </Button>
