@@ -24,7 +24,7 @@ const HomePage = () => {
 
   return (
     <>
-      {/* Hero Section with Animated Gradient Background */}
+      {/* Hero Section */}
       <Box
         sx={{
           position: 'relative',
@@ -34,7 +34,6 @@ const HomePage = () => {
           py: { xs: 8, md: 12 },
         }}
       >
-        {/* Moving Gradient Layer */}
         <MotionBox
           animate={{ backgroundPosition: ['0% 50%', '100% 50%'] }}
           transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
@@ -50,7 +49,6 @@ const HomePage = () => {
             zIndex: 0,
           }}
         />
-
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
           <MotionPaper
             elevation={8}
@@ -100,7 +98,13 @@ const HomePage = () => {
                 variant="outlined"
                 color="primary"
                 onClick={() => navigate('/login')}
-                sx={{ px: 4, py: 1.5, fontWeight: 600, borderColor: '#90caf9', color: '#90caf9' }}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  fontWeight: 600,
+                  borderColor: '#90caf9',
+                  color: '#90caf9',
+                }}
               >
                 Login
               </MotionButton>
@@ -122,7 +126,11 @@ const HomePage = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6 }}
                   viewport={{ once: true }}
-                  style={{ width: '100%', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}
+                  style={{
+                    width: '100%',
+                    borderRadius: '16px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                  }}
                   whileHover={{ scale: 1.03 }}
                 />
               </Parallax>
@@ -160,10 +168,69 @@ const HomePage = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6 }}
                   viewport={{ once: true }}
-                  style={{ width: '100%', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}
+                  style={{
+                    width: '100%',
+                    borderRadius: '16px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                  }}
                   whileHover={{ scale: 1.03 }}
                 />
               </Parallax>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* 🚀 Future Updates Section */}
+      <Box sx={{ py: 10, background: 'linear-gradient(to bottom, #0c2749, #0c1f33)', color: '#E0E1DD' }}>
+        <Container>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 6, textAlign: 'center' }}>
+            Future Updates
+          </Typography>
+          <Grid container spacing={6}>
+            <Grid item xs={12} md={6}>
+              <MotionImg
+                src="../images/future1.png"
+                alt="Multiplayer Practice"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                style={{
+                  width: '100%',
+                  borderRadius: '16px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                }}
+                whileHover={{ scale: 1.03 }}
+              />
+              <Typography variant="h5" sx={{ fontWeight: 600, mt: 3 }}>
+                Multiplayer Chat Practice
+              </Typography>
+              <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
+                Group chat simulations and peer-to-peer practice sessions for collaborative learning.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <MotionImg
+                src="../images/future2.png"
+                alt="Voice Conversations"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                style={{
+                  width: '100%',
+                  borderRadius: '16px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                }}
+                whileHover={{ scale: 1.03 }}
+              />
+              <Typography variant="h5" sx={{ fontWeight: 600, mt: 3 }}>
+                Voice Conversation Mode
+              </Typography>
+              <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
+                Speak naturally with the chatbot using voice input/output, powered by speech recognition and synthesis.
+              </Typography>
             </Grid>
           </Grid>
         </Container>
