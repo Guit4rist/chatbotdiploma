@@ -12,7 +12,7 @@ router = APIRouter(prefix="/lessons", tags=["Lessons"])
 def create_lesson_endpoint(lesson: LessonCreate, db: Session = Depends(get_db)):
     return crud_lesson.create_lesson(db, lesson)
 
-@router.get("/", response_model=List[Lesson])
+@router.get("/", response_model=list[Lesson])
 def get_lessons(db: Session = Depends(get_db)):
     return crud_lesson.get_all_lessons(db)
 
