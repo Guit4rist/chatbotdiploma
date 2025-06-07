@@ -226,7 +226,7 @@ const HomePage = () => {
                 Multiplayer Chat Practice
               </Typography>
               <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                Group chat simulations and peer-to-peer practice sessions for collaborative learning.
+                Join group chat sessions and interact with peers to enhance your language skills together.
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -248,7 +248,7 @@ const HomePage = () => {
                 Voice Conversation Mode
               </Typography>
               <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                Speak naturally with the chatbot using voice input/output, powered by speech recognition and synthesis.
+                Communicate with the chatbot using your voice — speech recognition and synthesis make it feel natural.
               </Typography>
             </Grid>
           </Grid>
