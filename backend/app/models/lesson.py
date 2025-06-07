@@ -2,7 +2,7 @@
 
 from sqlalchemy import Column, Integer, String, Text, Enum, ForeignKey
 from sqlalchemy.orm import relationship
-from app.db import Base
+from app.db.database import Base
 import enum
 
 class LessonType(str, enum.Enum):
