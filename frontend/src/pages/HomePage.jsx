@@ -209,7 +209,7 @@ const HomePage = () => {
           <Grid container spacing={6}>
             <Grid item xs={12} md={6}>
               <MotionImg
-                src="../images/future1.png"
+                src="../images/update1.png"
                 alt="Multiplayer Practice"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -231,7 +231,7 @@ const HomePage = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <MotionImg
-                src="../images/future2.png"
+                src="../images/update2.png"
                 alt="Voice Conversations"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}

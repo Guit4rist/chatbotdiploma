@@ -16,6 +16,9 @@ import {
   TextField,
   useTheme,
   useMediaQuery,
+  Paper,
+  Divider,
+  Stack,
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import axios from '../api/axios';
@@ -114,82 +117,82 @@ const ProfilePage = () => {
       }}
     >
       <Container maxWidth="md">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: 'center',
-            gap: 4,
-            mb: 4,
-          }}
-        >
-          <Box position="relative">
-            <Avatar
-              sx={{
-                width: 120,
-                height: 120,
-                fontSize: 40,
-                bgcolor: theme.palette.primary.main,
-              }}
-              src={avatarPreview}
-            >
-              {getInitials(user?.username)}
-            </Avatar>
-            <input
-              accept="image/*"
-              style={{ display: 'none' }}
-              id="upload-avatar"
-              type="file"
-              onChange={handleAvatarUpload}
-            />
-            <label htmlFor="upload-avatar">
-              <IconButton
-                component="span"
+        <Paper elevation={4} sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, mb: 6 }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4} alignItems="center">
+            <Box position="relative">
+              <Avatar
+                src={avatarPreview}
                 sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  bgcolor: 'background.paper',
-                  boxShadow: 1,
+                  width: 120,
+                  height: 120,
+                  fontSize: 40,
+                  border: `3px solid ${theme.palette.primary.main}`,
+                  boxShadow: 4,
                 }}
               >
-                <PhotoCamera fontSize="small" />
-              </IconButton>
-            </label>
-          </Box>
+                {getInitials(user?.username)}
+              </Avatar>
+              <input
+                accept="image/*"
+                style={{ display: 'none' }}
+                id="upload-avatar"
+                type="file"
+                onChange={handleAvatarUpload}
+              />
+              <label htmlFor="upload-avatar">
+                <IconButton
+                  component="span"
+                  sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    bgcolor: 'background.paper',
+                    boxShadow: 2,
+                    '&:hover': { bgcolor: 'grey.100' },
+                  }}
+                >
+                  <PhotoCamera fontSize="small" />
+                </IconButton>
+              </label>
+            </Box>
 
-          <Box flex={1}>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
-              {user?.username}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {user?.email || 'No email provided'}
-            </Typography>
+            <Box flex={1}>
+              <Typography variant="h4" fontWeight="bold" gutterBottom>
+                {user?.username}
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                {user?.email || 'No email provided'}
+              </Typography>
 
-            <Box mt={3}>
-              <Button variant="text" onClick={() => setPasswordDialogOpen(true)}>
+              <Button
+                variant="outlined"
+                sx={{ mt: 2 }}
+                onClick={() => setPasswordDialogOpen(true)}
+              >
                 Change Password
               </Button>
             </Box>
-          </Box>
-        </Box>
+          </Stack>
+        </Paper>
 
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 3,
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-            background: theme.palette.background.paper,
-            borderRadius: 3,
-            p: 3,
-            boxShadow: 3,
-          }}
-        >
-          <Typography><strong>Preferred Language:</strong> {user?.preferred_language || 'N/A'}</Typography>
-          <Typography><strong>Language Level:</strong> {user?.language_level || 'N/A'}</Typography>
-          <Typography><strong>Level:</strong> {user?.current_level ?? 1}</Typography>
-          <Typography><strong>XP:</strong> {user?.current_xp ?? 0}</Typography>
-        </Box>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 4 }}>
+          <Typography variant="h6" fontWeight="bold" gutterBottom>
+            Profile Details
+          </Typography>
+          <Divider sx={{ mb: 3 }} />
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+            }}
+          >
+            <Typography><strong>Preferred Language:</strong> {user?.preferred_language || 'N/A'}</Typography>
+            <Typography><strong>Language Level:</strong> {user?.language_level || 'N/A'}</Typography>
+            <Typography><strong>Level:</strong> {user?.current_level ?? 1}</Typography>
+            <Typography><strong>XP:</strong> {user?.current_xp ?? 0}</Typography>
+          </Box>
+        </Paper>
       </Container>
 
       <Snackbar
