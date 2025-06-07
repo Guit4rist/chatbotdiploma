@@ -93,15 +93,9 @@ const Navbar = () => {
   };
 
   const navItems = [
-  { label: 'Home', path: '/' },
-  ...(auth.isAuthenticated
-    ? [
-        { label: 'Chat', path: '/chat' },
-        { label: 'Lessons', path: '/lessons' },
-      ]
-    : []),
-];
-
+    { label: 'Home', path: '/' },
+    ...(auth.isAuthenticated ? [{ label: 'Chat', path: '/chat' }] : []),
+  ];
 
   return (
     <>
