@@ -34,6 +34,14 @@ function App() {
               }
             />
             <Route
+              path="/lessons"
+              element={
+                <ProtectedRoute>
+                  <LessonPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/profile"
               element={
                 <ProtectedRoute>

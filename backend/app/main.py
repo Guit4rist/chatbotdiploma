@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from fastapi.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 
+
 # Rate limiter instance
 limiter = Limiter(key_func=get_remote_address)
 
