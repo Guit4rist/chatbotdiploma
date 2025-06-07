@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.db import get_db
+from app.db.dependencies import get_db
 from app.schemas.lesson import Lesson, LessonCreate
 from app.crud import lesson as crud_lesson
 
