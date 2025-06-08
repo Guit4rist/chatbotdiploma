@@ -24,9 +24,13 @@ def create_chat_session(session_data: ChatSessionCreate, db: Session = Depends(g
 
 @router.get("/user/{user_id}", response_model=List[ChatSessionResponse])
 def get_user_sessions(user_id: int, db: Session = Depends(get_db)):
-    return db.query(ChatSessionModel).filter(ChatSessionModel.user_id == user_id).order_by(ChatSessionModel.created_at.desc()).all()
+    try:
+        return db.query(ChatSession).filter(ChatSession.user_id == user_id).all()
+    except Exception as e:
+        print("❌ Error in get_user_sessions:", e)
+        raise
 
-
+    
 @router.delete("/{session_id}")
 def delete_session(session_id: int, db: Session = Depends(get_db)):
     session = db.query(ChatSessionModel).filter(ChatSessionModel.id == session_id).first()
