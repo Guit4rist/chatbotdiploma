@@ -7,6 +7,8 @@ from app.models.user import User
 from app.schemas.chat_session import ChatSessionCreate, ChatSessionResponse
 from app.models.conversation import ChatSession as ChatSessionModel
 from typing import List
+import logging
+
 
 router = APIRouter(prefix="/chat-sessions", tags=["Chat Sessions"])
 
@@ -33,3 +35,5 @@ def delete_session(session_id: int, db: Session = Depends(get_db)):
     db.delete(session)
     db.commit()
     return {"detail": "Chat session deleted successfully"}
+
+logging.basicConfig(level=logging.DEBUG)
