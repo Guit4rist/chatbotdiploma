@@ -23,6 +23,8 @@ from fastapi.staticfiles import StaticFiles
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(title="Language Learning Platform with Chatbot")
+
+app.include_router(router)
 app.state.limiter = limiter
 
 static_dir = os.path.join(os.path.dirname(__file__), "static")
