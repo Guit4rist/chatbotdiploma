@@ -22,7 +22,7 @@ def create_chat_session(session_data: ChatSessionCreate, db: Session = Depends(g
 
 @router.get("/user/{user_id}", response_model=List[ChatSessionResponse])
 def get_user_sessions(user_id: int, db: Session = Depends(get_db)):
-    return db.query(ChatSessionModel).filter(ChatSessionModel.user_id == user_id).order_by(ChatSession.created_at.desc()).all()
+    return db.query(ChatSessionModel).filter(ChatSessionModel.user_id == user_id).order_by(ChatSessionModel.created_at.desc()).all()
 
 
 @router.delete("/{session_id}")
