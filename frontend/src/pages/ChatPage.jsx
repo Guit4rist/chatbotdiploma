@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   Box,
   Button,
@@ -35,6 +35,13 @@ import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import LinearProgress from '@mui/material/LinearProgress';
+import {
+  fetchChatSessions,
+  createChatSession,
+  deleteChatSession,
+  fetchConversationHistory,
+  sendMessageToBot,
+} from "../api/chatApi";
 
 
 // Animated typing dots component
@@ -102,65 +109,54 @@ const ChatPage = () => {
   const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
-  // Fetch sessions on mount or when sessions change
-  useEffect(() => {
-    // Fetch sessions and set selectedSessionId
-    // This is a placeholder; replace with your real fetch logic
-    const fetchSessions = async () => {
-      // Example dummy data
-      const data = [
-        { id: '1', title: 'General Chat' },
-        { id: '2', title: 'Spanish Practice' },
-      ];
+ useEffect(() => {
+    const load = async () => {
+      const data = await fetchChatSessions(user.id);
       setSessions(data);
-      if (!selectedSessionId && data.length) setSelectedSessionId(data[0].id);
+      if (data.length) setSelectedSessionId(data[0].id);
     };
-    fetchSessions();
-  }, []);
+    load();
+  }, [user.id]);
 
-  // Fetch messages when selectedSessionId changes
+   // Load history when session changes
   useEffect(() => {
     if (!selectedSessionId) return;
-    const fetchMessages = async () => {
-      // Replace with real API call
-      const dummyMessages = [
-        { sender: 'bot', text: 'Hello! How can I help you today?' },
-        { sender: 'user', text: 'Hi! Can you help me practice English?' },
-      ];
-      setMessages(dummyMessages);
+    const loadHistory = async () => {
+      const history = await fetchConversationHistory(user.id, selectedSessionId);
+      setMessages(history.map(m => ({ sender: m.role, text: m.content })));
     };
-    fetchMessages();
-  }, [selectedSessionId]);
+    loadHistory();
+  }, [selectedSessionId, user.id]);
 
-  // Scroll to bottom on messages update
+  // Scroll to bottom
   useEffect(() => {
-    if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
-    }
+    listRef.current?.scrollTo(0, listRef.current.scrollHeight);
   }, [messages]);
 
   // Send message handler
   const handleSend = async () => {
     if (!input.trim()) return;
-    const newMessage = { sender: 'user', text: input.trim() };
-    setMessages((prev) => [...prev, newMessage]);
+    setMessages(prev => [...prev, { sender: 'user', text: input }]);
+    const msg = input;
     setInput('');
     setLoading(true);
 
-    // Simulate bot response delay with typing animation
-    setTimeout(async () => {
-      // Simulate bot response from API (replace with real API call)
-      const botResponse = {
-        sender: 'bot',
-        text:
-          'Sure! Here is some **bold text**, _italic text_, `inline code`, and a list:\n\n- Item 1\n- Item 2\n- Item 3',
-      };
-      setMessages((prev) => [...prev, botResponse]);
+    try {
+      const { response, xp_earned, current_level } = await sendMessageToBot({
+        user_id: user.id,
+        chat_session_id: selectedSessionId,
+        message: msg,
+      });
+
+      setMessages(prev => [...prev, { sender: 'bot', text: response }]);
+      setXp(prev => prev + xp_earned);
+      setLevel(current_level);
+    } catch (err) {
+      console.error(err);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Error communicating with AI.' }]);
+    } finally {
       setLoading(false);
-      // Update XP and Level as needed (mock)
-      setXp((prev) => prev + 10);
-      if (xp + 10 >= 100) setLevel((l) => l + 1);
-    }, 1500);
+    }
   };
 
   // Handle enter key send
@@ -256,6 +252,49 @@ const ChatPage = () => {
     );
   };
 
+  const handleCreateSession = async () => {
+  if (!newSessionTitle.trim()) return;
+  try {
+    const response = await axios.post('/chat_sessions/', {
+      title: newSessionTitle.trim(),
+    });
+    const newSession = response.data;
+    setSessions((prev) => [...prev, newSession]);
+    setSelectedSessionId(newSession.id);
+    setNewSessionTitle('');
+    setCreating(false);
+  } catch (err) {
+    console.error('Failed to create session:', err);
+  }
+};
+
+const handleRenameSession = async (sessionId) => {
+  try {
+    await axios.put(`/chat_sessions/${sessionId}`, {
+      title: editedTitle,
+    });
+    setSessions((prev) =>
+      prev.map((s) => (s.id === sessionId ? { ...s, title: editedTitle } : s))
+    );
+    setEditingSessionId(null);
+  } catch (err) {
+    console.error('Failed to rename session:', err);
+  }
+};
+
+const handleDeleteSession = async (sessionId) => {
+  try {
+    await axios.delete(`/chat_sessions/${sessionId}`);
+    setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+    if (selectedSessionId === sessionId && sessions.length > 1) {
+      const fallback = sessions.find((s) => s.id !== sessionId);
+      setSelectedSessionId(fallback?.id || null);
+    }
+  } catch (err) {
+    console.error('Failed to delete session:', err);
+  }
+};
+
   return (
     <Container
       maxWidth="xl"
@@ -304,15 +343,13 @@ const ChatPage = () => {
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     {editingSessionId === session.id ? (
                       <IconButton
-                        edge="end"
-                        onClick={() => {
-                          // handleRenameSession here
-                          setEditingSessionId(null);
-                        }}
-                        sx={{ color: 'white' }}
-                      >
-                        <SaveIcon />
-                      </IconButton>
+                            edge="end"
+                            onClick={() => handleRenameSession(session.id)}
+                            sx={{ color: 'white' }}
+                          >
+                            <SaveIcon />
+                          </IconButton>
+
                     ) : (
                       <>
                         <IconButton
@@ -327,19 +364,14 @@ const ChatPage = () => {
                           <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton
-                          edge="end"
-                          onClick={() => {
-                            // handleDeleteSession here
-                            setSessions((prev) => prev.filter((s) => s.id !== session.id));
-                            if (selectedSessionId === session.id && sessions.length > 1) {
-                              setSelectedSessionId(sessions.find((s) => s.id !== session.id)?.id);
-                            }
-                          }}
-                          sx={{ color: 'white' }}
-                          aria-label="Delete session"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
+                            edge="end"
+                            onClick={() => handleDeleteSession(session.id)}
+                            sx={{ color: 'white' }}
+                            aria-label="Delete session"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+
                       </>
                     )}
                   </Box>
@@ -540,21 +572,12 @@ const ChatPage = () => {
         <DialogActions>
           <Button onClick={() => setCreating(false)}>Cancel</Button>
           <Button
-            disabled={!newSessionTitle.trim()}
-            onClick={() => {
-              // Add new session to list
-              const newSession = {
-                id: Date.now().toString(),
-                title: newSessionTitle.trim(),
-              };
-              setSessions((prev) => [...prev, newSession]);
-              setSelectedSessionId(newSession.id);
-              setNewSessionTitle('');
-              setCreating(false);
-            }}
-          >
-            Create
-          </Button>
+              disabled={!newSessionTitle.trim()}
+              onClick={handleCreateSession}
+            >
+              Create
+            </Button>
+
         </DialogActions>
       </Dialog>
     </Container>
