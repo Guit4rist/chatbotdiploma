@@ -91,7 +91,7 @@ const TypingIndicator = () => {
 };
 
 const ChatPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -110,6 +110,7 @@ const ChatPage = () => {
   const listRef = useRef(null);
 
  useEffect(() => {
+    if (!user) return;
     const load = async () => {
       const data = await fetchChatSessions(user.id);
       setSessions(data);
@@ -120,7 +121,7 @@ const ChatPage = () => {
 
    // Load history when session changes
   useEffect(() => {
-    if (!selectedSessionId) return;
+    if (!user || !selectedSessionId) return;
     const loadHistory = async () => {
       const history = await fetchConversationHistory(user.id, selectedSessionId);
       setMessages(history.map(m => ({ sender: m.role, text: m.content })));
@@ -132,6 +133,14 @@ const ChatPage = () => {
   useEffect(() => {
     listRef.current?.scrollTo(0, listRef.current.scrollHeight);
   }, [messages]);
+
+  if (authLoading || !user) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   // Send message handler
   const handleSend = async () => {
