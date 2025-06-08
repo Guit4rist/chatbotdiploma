@@ -70,7 +70,7 @@ const ProfilePage = () => {
     formData.append('avatar', file);
 
     try {
-      await axios.post('/profile/upload-avatar/', formData, {
+      await axios.post('/users/profile/upload-avatar/', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -88,7 +88,7 @@ const ProfilePage = () => {
 
   const handlePasswordChange = async () => {
     try {
-      await axios.post('/profile/change-password/', passwordData, {
+      await axios.post('/users/profile/change-password/', passwordData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSnack({ open: true, message: 'Password changed successfully.', severity: 'success' });
