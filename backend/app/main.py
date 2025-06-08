@@ -14,6 +14,8 @@ from fastapi.responses import JSONResponse
 from fastapi.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import os
+from fastapi.staticfiles import StaticFiles
 
 
 
@@ -23,8 +25,8 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="Language Learning Platform with Chatbot")
 app.state.limiter = limiter
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Middleware to handle rate limit exceptions
 @app.exception_handler(RateLimitExceeded)
