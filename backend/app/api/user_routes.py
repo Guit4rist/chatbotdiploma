@@ -7,6 +7,7 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate, UserOut
 from app.services.auth import hash_password as get_password_hash
 from app.api.auth_routes import get_current_user
+from pydantic import BaseModel
 import shutil
 import os
 
@@ -55,7 +56,7 @@ def update_user(user_id: int, update: UserUpdate, db: Session = Depends(get_db))
 
 AVATAR_UPLOAD_DIR = "static/avatars"
 
-@router.post("/profile/avatar/")
+@router.post("/profile/upload-avatar/")
 def upload_avatar(file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if file.content_type not in ["image/jpeg", "image/png"]:
         raise HTTPException(status_code=400, detail="Invalid file type")
@@ -68,7 +69,7 @@ def upload_avatar(file: UploadFile = File(...), db: Session = Depends(get_db), c
     with open(filepath, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    current_user.avatar_url = filepath
+    current_user.avatar_url = f"/static/avatars/{filename}"
     db.commit()
     return {"avatar_url": filepath}
 
@@ -81,3 +82,27 @@ def set_language(
     current_user.preferred_language = preferred_language
     db.commit()
     return {"message": "Language updated", "preferred_language": preferred_language}
+
+@router.get("/me", response_model=UserOut)
+def read_current_user(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+@router.post("/profile/change-password/")
+def change_password(
+    data: PasswordChange,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from app.services.auth import verify_password
+
+    if not verify_password(data.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+
+    current_user.hashed_password = get_password_hash(data.new_password)
+    db.commit()
+    return {"message": "Password updated successfully"}

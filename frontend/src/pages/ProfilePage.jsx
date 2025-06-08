@@ -38,7 +38,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get('/me', {
+        const res = await axios.get('/users/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
@@ -76,7 +76,9 @@ const ProfilePage = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setAvatarPreview(URL.createObjectURL(file));
+      const avatarUrl = `${import.meta.env.VITE_API_URL || ''}/static/avatars/user_${user.id}_${file.name}`;
+      setAvatarPreview(avatarUrl);
+
       setSnack({ open: true, message: 'Avatar uploaded successfully.', severity: 'success' });
     } catch (error) {
       console.error(error);
