@@ -5,17 +5,14 @@ from datetime import datetime
 from typing import List, Optional
 
 
-class ChatSessionBase(BaseModel):
-    title: Optional[str] = "New Chat"
-
-
-class ChatSessionCreate(ChatSessionBase):
+class ChatSessionCreate(BaseModel):
     user_id: int
+    title: str | None = None
 
-
-class ChatSession(ChatSessionBase):
+class ChatSessionResponse(BaseModel):
     id: int
     user_id: int
+    title: str
     created_at: datetime
 
     class Config:
