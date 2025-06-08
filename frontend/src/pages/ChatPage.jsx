@@ -109,13 +109,10 @@ const ChatPage = () => {
   const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
-  if (authLoading || !user || !user.id) {
-  return (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-      <CircularProgress />
-    </Box>
-  );
+  if (!user || !user.id) {
+  return <div>User info not loaded. Check AuthContext.</div>;
 }
+
 
 console.log("Fetching sessions for user:", user?.id);
 
@@ -158,14 +155,6 @@ console.log("Fetching sessions for user:", user?.id);
   useEffect(() => {
     listRef.current?.scrollTo(0, listRef.current.scrollHeight);
   }, [messages]);
-
-  if (authLoading || !user) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   // Send message handler
   const handleSend = async () => {
