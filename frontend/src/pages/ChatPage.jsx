@@ -91,7 +91,7 @@ const TypingIndicator = () => {
 };
 
 const ChatPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -109,8 +109,17 @@ const ChatPage = () => {
   const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
+  if (authLoading || !user || !user.id) {
+  return (
+    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <CircularProgress />
+    </Box>
+  );
+}
+
+
  useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
     const load = async () => {
       const data = await fetchChatSessions(user.id);
       setSessions(data);
@@ -121,7 +130,7 @@ const ChatPage = () => {
 
    // Load history when session changes
   useEffect(() => {
-    if (!user || !selectedSessionId) return;
+    if (!user?.id || !selectedSessionId) return;
     const loadHistory = async () => {
       const history = await fetchConversationHistory(user.id, selectedSessionId);
       setMessages(history.map(m => ({ sender: m.role, text: m.content })));
@@ -303,6 +312,9 @@ const handleDeleteSession = async (sessionId) => {
     console.error('Failed to delete session:', err);
   }
 };
+
+console.log("user:", user); // Make sure it’s not undefined/null
+
 
   return (
     <Container
