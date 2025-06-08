@@ -39,11 +39,21 @@ export const AuthProvider = ({ children }) => {
     setAuth({ isAuthenticated: false, token: null, user: null });
   };
 
-  return (
-    <AuthContext.Provider value={{ auth, login, logout, loading }}>
+    return (
+    <AuthContext.Provider
+      value={{
+        auth,
+        login,
+        logout,
+        loading,
+        user: auth.user,               // ✅ Add this
+        isAuthenticated: auth.isAuthenticated, // ✅ Add this
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
+
 };
 
 export const useAuth = () => useContext(AuthContext);
