@@ -117,6 +117,8 @@ const ChatPage = () => {
   );
 }
 
+console.log("Fetching sessions for user:", user?.id);
+
 
  useEffect(() => {
     if (!user?.id) return;
