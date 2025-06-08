@@ -76,7 +76,7 @@ const ProfilePage = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      const avatarUrl = `${import.meta.env.VITE_API_URL || ''}/static/avatars/user_${user.id}_${file.name}`;
+      const avatarUrl = `${import.meta.env.VITE_API_URL || ''}${res.data.avatar_url}`;
       setAvatarPreview(avatarUrl);
 
       setSnack({ open: true, message: 'Avatar uploaded successfully.', severity: 'success' });
