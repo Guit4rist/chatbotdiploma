@@ -121,24 +121,38 @@ console.log("Fetching sessions for user:", user?.id);
 
 
  useEffect(() => {
-    if (!user?.id) return;
-    const load = async () => {
+  if (!user?.id) return;
+
+  const load = async () => {
+    try {
+      console.log("Fetching sessions for user:", user.id);
       const data = await fetchChatSessions(user.id);
       setSessions(data);
       if (data.length) setSelectedSessionId(data[0].id);
-    };
-    load();
-  }, [user.id]);
+    } catch (error) {
+      console.error("Error loading chat sessions:", error);
+    }
+  };
+
+  load();
+}, [user.id]);
+
 
    // Load history when session changes
   useEffect(() => {
-    if (!user?.id || !selectedSessionId) return;
-    const loadHistory = async () => {
+  if (!user?.id || !selectedSessionId) return;
+
+  const loadHistory = async () => {
+    try {
       const history = await fetchConversationHistory(user.id, selectedSessionId);
       setMessages(history.map(m => ({ sender: m.role, text: m.content })));
-    };
-    loadHistory();
-  }, [selectedSessionId, user.id]);
+    } catch (error) {
+      console.error("Error loading conversation history:", error);
+    }
+  };
+
+  loadHistory();
+}, [selectedSessionId, user.id]);
 
   // Scroll to bottom
   useEffect(() => {
