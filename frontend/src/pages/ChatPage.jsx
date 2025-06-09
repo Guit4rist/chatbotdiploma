@@ -119,7 +119,7 @@ const ChatPage = () => {
   return <CircularProgress />;
   }
 
-  if (!user || !user.id) {
+  if (!user || !user.username) {
     return <div>User info not loaded. Check AuthContext.</div>;
   }
 
