@@ -14,7 +14,14 @@ import { useAuth } from './context/AuthContext';
 function App() {
   const { user, isAuthenticated, loading } = useAuth(); // 👈 get loading state
 
-  // if (loading) return <div>Loading...</div>; // 👈 wait for auth hydration
+  if (loading) {
+  return (
+    <div style={{ paddingTop: '5rem', textAlign: 'center', fontSize: '1.2rem' }}>
+      Loading authentication...
+    </div>
+  );
+  }
+
   
   console.log("Auth loaded:", { user, isAuthenticated });
 
