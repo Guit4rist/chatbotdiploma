@@ -178,6 +178,7 @@ const ChatPage = () => {
         user_id: user.user_id,
         chat_session_id: selectedSessionId,
         message: msg,
+        language: user.language || "English",
       });
 
       setMessages(prev => [...prev, { sender: 'bot', text: response }]);
@@ -329,7 +330,6 @@ const handleDeleteSession = async (sessionId) => {
   }
 };
 
-console.log("user:", user); // Make sure it’s not undefined/null
 
 
   return (
