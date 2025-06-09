@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('user');
+    console.log('Auth initializing from storage...', storedToken, storedUser);
 
     if (storedToken && storedUser) {
       setAuth({
