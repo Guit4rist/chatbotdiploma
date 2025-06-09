@@ -12,21 +12,38 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(true); // <- add this
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('accessToken');
-    const storedUser = localStorage.getItem('user');
-    console.log('Auth initializing from storage...', storedToken, storedUser);
-
-    if (storedToken && storedUser) {
-      setAuth({
-        isAuthenticated: true,
-        token: storedToken,
-        user: JSON.parse(storedUser),
-      });
+    useEffect(() => {
+  const fetchUser = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setLoading(false); // <- This is what was missing
+      return;
     }
 
-    setLoading(false); // <- mark loading complete
-  }, []);
+    try {
+      const res = await fetch("/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        const user = await res.json();
+        setAuth({ isAuthenticated: true, token, user });
+      } else {
+        logout();
+      }
+    } catch (err) {
+      console.error("Failed to fetch user", err);
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchUser();
+}, []);
+
+
 
   const login = (token, user) => {
     localStorage.setItem('accessToken', token);
