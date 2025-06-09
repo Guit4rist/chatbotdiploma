@@ -27,6 +27,8 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         preferred_language=user.preferred_language,
         language_level=user.language_level,
         display_name=user.display_name,
+        interface_language=user.interface_language,
+        timezone=user.timezone,
         avatar_url=user.avatar_url,
         bio=user.bio
     )

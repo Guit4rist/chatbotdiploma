@@ -1,6 +1,6 @@
 # backend/app/api/chat_session_routes.py
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 from app.models.user import User
@@ -25,10 +25,20 @@ def create_chat_session(session_data: ChatSessionCreate, db: Session = Depends(g
 @router.get("/user/{user_id}", response_model=List[ChatSessionResponse])
 def get_user_sessions(user_id: int, db: Session = Depends(get_db)):
     try:
-        return db.query(ChatSession).filter(ChatSession.user_id == user_id).all()
+        return db.query(ChatSessionModel).filter(ChatSessionModel.user_id == user_id).all()
     except Exception as e:
         print("❌ Error in get_user_sessions:", e)
         raise
+
+@router.put("/{session_id}", response_model=ChatSessionResponse)
+def rename_chat_session(session_id: int, title: str = Body(...), db: Session = Depends(get_db)):
+    session = db.query(ChatSessionModel).filter(ChatSessionModel.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat session not found")
+    session.title = title
+    db.commit()
+    db.refresh(session)
+    return session
 
     
 @router.delete("/{session_id}")
