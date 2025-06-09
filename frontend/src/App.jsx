@@ -16,8 +16,6 @@ function App() {
 
   // if (loading) return <div>Loading...</div>; // 👈 wait for auth hydration
 
-  console.log("Auth loaded:", { user, isAuthenticated });
-
 
   return (
     <ParallaxProvider>
