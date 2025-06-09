@@ -19,14 +19,26 @@ export const deleteChatSession = async (sessionId) => {
 };
 
 // Send a message to the chatbot
-export const sendMessageToBot = async ({ message, userId, chatSessionId, language = "English" }) => {
-  const res = await axios.post("/chat", {
+export const sendMessageToBot = async ({
+  message,
+  userId,
+  chatSessionId,
+  language = "English"
+}) => {
+  const payload = {
     message,
     user_id: userId,
     chat_session_id: chatSessionId,
     language,
-  });
-  return res.data;
+  };
+
+  try {
+    const res = await axios.post("/chat", payload);
+    return res.data;
+  } catch (error) {
+    console.error("Failed to send message to chatbot:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 // Fetch conversation history (optional session filter)
