@@ -109,9 +109,13 @@ const ChatPage = () => {
   const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
+  if (authLoading) {
+  return <CircularProgress />;
+  }
+
   if (!user || !user.id) {
-  return <div>User info not loaded. Check AuthContext.</div>;
-}
+    return <div>User info not loaded. Check AuthContext.</div>;
+  }
 
 
 console.log("Fetching sessions for user:", user?.id);
@@ -132,7 +136,7 @@ console.log("Fetching sessions for user:", user?.id);
   };
 
   load();
-}, [user.id]);
+}, [user]);
 
 
    // Load history when session changes
@@ -149,7 +153,7 @@ console.log("Fetching sessions for user:", user?.id);
   };
 
   loadHistory();
-}, [selectedSessionId, user.id]);
+}, [selectedSessionId, user]);
 
   // Scroll to bottom
   useEffect(() => {
