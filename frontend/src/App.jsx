@@ -14,7 +14,10 @@ import { useAuth } from './context/AuthContext';
 function App() {
   const { loading } = useAuth(); // 👈 get loading state
 
-  if (loading) return <div>Loading...</div>; // 👈 wait for auth hydration
+  // if (loading) return <div>Loading...</div>; // 👈 wait for auth hydration
+
+  console.log("Auth loaded:", { user, isAuthenticated });
+
 
   return (
     <ParallaxProvider>
