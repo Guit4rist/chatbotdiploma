@@ -284,6 +284,7 @@ console.log("Fetching sessions for user:", user?.id);
   try {
     const response = await axios.post('/chat_sessions/', {
       title: newSessionTitle.trim(),
+      user_id: user.id,
     });
     const newSession = response.data;
     setSessions((prev) => [...prev, newSession]);
