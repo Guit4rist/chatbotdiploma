@@ -92,6 +92,12 @@ const TypingIndicator = () => {
 
 const ChatPage = () => {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  console.log("AuthContext values:", {
+  isAuthenticated,
+  authLoading,
+  user,
+});
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
