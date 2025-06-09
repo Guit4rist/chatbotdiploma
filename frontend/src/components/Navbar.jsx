@@ -94,7 +94,7 @@ const Navbar = () => {
 
   const navItems = [
     { label: 'Home', path: '/' },
-    ...(auth.isAuthenticated ? [{ label: 'Chat', path: '/chat' }] : []),
+    ...(isAuthenticated ? [{ label: 'Chat', path: '/chat' }] : []),
   ];
 
   return (
@@ -150,7 +150,7 @@ const Navbar = () => {
                         <ListItemText primary={label} />
                       </ListItem>
                     ))}
-                    {auth.isAuthenticated ? (
+                    {isAuthenticated ? (
                       <>
                         <ListItem button onClick={handleProfile}>
                           <ListItemText primary="Profile" />
@@ -199,21 +199,21 @@ const Navbar = () => {
                 </Button>
               ))}
 
-              {auth.isAuthenticated ? (
+              {isAuthenticated ? (
                 <>
                   <Tooltip title="Account settings">
                     <IconButton onClick={handleMenuOpen} size="small">
-                      {auth.user?.username ? (
+                      {user?.username ? (
                         <Avatar
                           sx={{
-                            bgcolor: stringToColor(auth.user.username),
+                            bgcolor: stringToColor(user.username),
                             width: 36,
                             height: 36,
                             fontSize: 14,
                             fontWeight: 600,
                           }}
                         >
-                          {getInitials(auth.user.username)}
+                          {getInitials(user.username)}
                         </Avatar>
                       ) : (
                         <Avatar>
@@ -240,7 +240,7 @@ const Navbar = () => {
                   >
                     <MenuItem disabled>
                       <Typography variant="body2" fontWeight={500}>
-                        {auth.user?.username}
+                        {user?.username}
                       </Typography>
                     </MenuItem>
                     <MenuItem onClick={handleProfile}>Profile</MenuItem>
