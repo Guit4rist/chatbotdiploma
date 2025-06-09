@@ -65,7 +65,7 @@ const buttonStyle = {
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { auth, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
