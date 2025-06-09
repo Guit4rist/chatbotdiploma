@@ -126,12 +126,12 @@ const ChatPage = () => {
 
 
  useEffect(() => {
-  if (!auth.user?.user_id) return;
+  if (!user?.user_id) return;
 
   const load = async () => {
     try {
-      console.log("Fetching sessions for user:", auth.user.user_id);
-      const data = await fetchChatSessions(auth.user.user_id);
+      console.log("Fetching sessions for user:", user.user_id);
+      const data = await fetchChatSessions(user.user_id);
       setSessions(data);
       if (data.length) setSelectedSessionId(data[0].id);
     } catch (error) {
@@ -140,17 +140,17 @@ const ChatPage = () => {
   };
 
   load();
-}, [auth.user]);
+}, [user]);
 
 
 
    // Load history when session changes
   useEffect(() => {
-  if (!auth.user?.user_id || !selectedSessionId) return;
+  if (!user?.user_id || !selectedSessionId) return;
 
   const loadHistory = async () => {
     try {
-      const history = await fetchConversationHistory(auth.user.user_id, selectedSessionId);
+      const history = await fetchConversationHistory(user.user_id, selectedSessionId);
       setMessages(history.map(m => ({ sender: m.role, text: m.content })));
     } catch (error) {
       console.error("Error loading conversation history:", error);
@@ -158,7 +158,7 @@ const ChatPage = () => {
   };
 
   loadHistory();
-}, [selectedSessionId, auth.user]);
+}, [selectedSessionId, user]);
 
   // Scroll to bottom
   useEffect(() => {
@@ -175,7 +175,7 @@ const ChatPage = () => {
 
     try {
       const { response, xp_earned, current_level } = await sendMessageToBot({
-        user_id: auth.user.user_id,
+        user_id: user.user_id,
         chat_session_id: selectedSessionId,
         message: msg,
       });
@@ -289,7 +289,7 @@ const ChatPage = () => {
   try {
     const response = await axios.post('/chat_sessions/', {
       title: newSessionTitle.trim(),
-      user_id: auth.user.user_id,
+      user_id: user.user_id,
     });
     const newSession = response.data;
     setSessions((prev) => [...prev, newSession]);
