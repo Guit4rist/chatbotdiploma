@@ -124,16 +124,14 @@ const ChatPage = () => {
   }
 
 
-console.log("Fetching sessions for user:", user?.id);
-
 
  useEffect(() => {
-  if (!user?.id) return;
+  if (!auth.user?.user_id) return;
 
   const load = async () => {
     try {
-      console.log("Fetching sessions for user:", user.id);
-      const data = await fetchChatSessions(user.id);
+      console.log("Fetching sessions for user:", auth.user.user_id);
+      const data = await fetchChatSessions(auth.user.user_id);
       setSessions(data);
       if (data.length) setSelectedSessionId(data[0].id);
     } catch (error) {
@@ -142,16 +140,17 @@ console.log("Fetching sessions for user:", user?.id);
   };
 
   load();
-}, [user]);
+}, [auth.user]);
+
 
 
    // Load history when session changes
   useEffect(() => {
-  if (!user?.id || !selectedSessionId) return;
+  if (!auth.user?.user_id || !selectedSessionId) return;
 
   const loadHistory = async () => {
     try {
-      const history = await fetchConversationHistory(user.id, selectedSessionId);
+      const history = await fetchConversationHistory(auth.user.user_id, selectedSessionId);
       setMessages(history.map(m => ({ sender: m.role, text: m.content })));
     } catch (error) {
       console.error("Error loading conversation history:", error);
@@ -159,7 +158,7 @@ console.log("Fetching sessions for user:", user?.id);
   };
 
   loadHistory();
-}, [selectedSessionId, user]);
+}, [selectedSessionId, auth.user]);
 
   // Scroll to bottom
   useEffect(() => {
@@ -176,7 +175,7 @@ console.log("Fetching sessions for user:", user?.id);
 
     try {
       const { response, xp_earned, current_level } = await sendMessageToBot({
-        user_id: user.id,
+        user_id: auth.user.user_id,
         chat_session_id: selectedSessionId,
         message: msg,
       });
@@ -290,7 +289,7 @@ console.log("Fetching sessions for user:", user?.id);
   try {
     const response = await axios.post('/chat_sessions/', {
       title: newSessionTitle.trim(),
-      user_id: user.id,
+      user_id: auth.user.user_id,
     });
     const newSession = response.data;
     setSessions((prev) => [...prev, newSession]);
@@ -301,6 +300,7 @@ console.log("Fetching sessions for user:", user?.id);
     console.error('Failed to create session:', err);
   }
 };
+
 
 const handleRenameSession = async (sessionId) => {
   try {
