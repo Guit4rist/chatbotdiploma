@@ -35,13 +35,13 @@ import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import LinearProgress from '@mui/material/LinearProgress';
-// import {
-//  fetchChatSessions,
-//  createChatSession,
-//  deleteChatSession,
-//  fetchConversationHistory,
-//  sendMessageToBot,
-// } from "../api/chatApi";
+import {
+  fetchChatSessions,
+  createChatSession,
+  deleteChatSession,
+  fetchConversationHistory,
+  sendMessageToBot,
+} from "../api/chatApi";
 
 
 // Animated typing dots component
@@ -111,8 +111,8 @@ const ChatPage = () => {
   const [newSessionTitle, setNewSessionTitle] = useState('');
   const [editingSessionId, setEditingSessionId] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
-  const [level, setLevel] = useState(3);
-  const [xp, setXp] = useState(120);
+  const [level, setLevel] = useState(1);
+  const [xp, setXp] = useState(0);
   const listRef = useRef(null);
 
   if (authLoading) {
@@ -125,71 +125,40 @@ const ChatPage = () => {
 
 
 
-useEffect(() => {
-  // Ensure sessions are only set once
-  if (sessions.length > 0) return;
+ useEffect(() => {
+  if (!user?.user_id) return;
 
-  if (user?.user_id) {
-    const dummySessions = [
-      { id: 's1', title: 'Ordering Food in a Restaurant' },
-      { id: 's2', title: 'Job Interview Practice' },
-      { id: 's3', title: 'Traveling Abroad' },
-    ];
+  const load = async () => {
+    try {
+      console.log("Fetching sessions for user:", user.user_id);
+      const data = await fetchChatSessions(user.user_id);
+      setSessions(data);
+      if (data.length) setSelectedSessionId(data[0].id);
+    } catch (error) {
+      console.error("Error loading chat sessions:", error);
+    }
+  };
 
-    setSessions(dummySessions);
-    setSelectedSessionId(dummySessions[0].id);
-  } else {
-    // Temporary fallback for testing without login
-    const dummyUser = { user_id: 'demo' };
-    const dummySessions = [
-      { id: 's1', title: 'Ordering Food in a Restaurant' },
-      { id: 's2', title: 'Job Interview Practice' },
-      { id: 's3', title: 'Traveling Abroad' },
-    ];
-
-    setSessions(dummySessions);
-    setSelectedSessionId(dummySessions[0].id);
-  }
+  load();
 }, [user]);
 
 
 
- useEffect(() => {
-  if (!selectedSessionId) return;
+   // Load history when session changes
+  useEffect(() => {
+  if (!user?.user_id || !selectedSessionId) return;
 
-  const dummyMessagesBySession = {
-    s1: [
-      { sender: 'user', text: "Hi, I'd like to order something to eat." },
-      { sender: 'bot', text: "Of course! May I recommend our special grilled chicken today?" },
-      { sender: 'user', text: "That sounds good. I'll take the grilled chicken with vegetables, please." },
-      { sender: 'bot', text: "Excellent choice! Would you like any drinks or dessert with that?" },
-      { sender: 'user', text: "I'll have a lemonade, no dessert." },
-      { sender: 'bot', text: "Great. Your order will be ready in 15 minutes. Enjoy your meal!" },
-      { sender: 'bot', text: "**Feedback**: Great job using polite phrases and ordering clearly. Next time, try asking a follow-up question like 'What desserts do you have?' to extend the conversation." }
-    ],
-    s2: [
-      { sender: 'user', text: "Can you help me prepare for a job interview?" },
-      { sender: 'bot', text: "Certainly! What type of position are you applying for?" },
-      { sender: 'user', text: "I'm applying for a software developer position." },
-      { sender: 'bot', text: "Great. Let's start with a common question: 'Tell me about yourself.'" },
-      { sender: 'user', text: "I'm a recent graduate with a degree in computer science. I've worked on several projects involving web development and AI." },
-      { sender: 'bot', text: "Good! How about: 'What are your strengths and weaknesses?'" },
-      { sender: 'user', text: "My strength is problem-solving and my weakness is sometimes spending too much time refining code." },
-      { sender: 'bot', text: "**Feedback**: You answered clearly and confidently. Try balancing weaknesses by showing improvement efforts, like 'I'm learning to manage time better during coding tasks.'" }
-    ],
-    s3: [
-      { sender: 'user', text: "How do I ask for directions in French?" },
-      { sender: 'bot', text: "You can say: 'Excusez-moi, où est la gare ?' which means 'Excuse me, where is the train station?'" },
-      { sender: 'user', text: "What if I don’t understand the answer?" },
-      { sender: 'bot', text: "A common reply might be: 'Allez tout droit, puis tournez à gauche.' – 'Go straight, then turn left.'" },
-      { sender: 'user', text: "Could you give me another example?" },
-      { sender: 'bot', text: "Sure! 'Prenez la deuxième rue à droite.' – 'Take the second street on the right.'" },
-      { sender: 'bot', text: "**Feedback**: Excellent initiative in asking follow-up questions. Consider practicing pronunciation as well to improve your confidence during real interactions." }
-    ]
+  const loadHistory = async () => {
+    try {
+      const history = await fetchConversationHistory(user.user_id, selectedSessionId);
+      setMessages(history.map(m => ({ sender: m.role, text: m.content })));
+    } catch (error) {
+      console.error("Error loading conversation history:", error);
+    }
   };
 
-  setMessages(dummyMessagesBySession[selectedSessionId] || []);
-}, [selectedSessionId]);
+  loadHistory();
+}, [selectedSessionId, user]);
 
   // Scroll to bottom
   useEffect(() => {

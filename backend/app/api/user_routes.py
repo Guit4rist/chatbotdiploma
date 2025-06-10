@@ -8,6 +8,8 @@ from app.schemas.user import UserCreate, UserUpdate, UserOut
 from app.services.auth import hash_password as get_password_hash
 from app.api.auth_routes import get_current_user
 from pydantic import BaseModel
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 import shutil
 import os
 
@@ -85,9 +87,9 @@ def set_language(
     db.commit()
     return {"message": "Language updated", "preferred_language": preferred_language}
 
-@router.get("/me", response_model=UserOut)
-def read_current_user(current_user: User = Depends(get_current_user)):
-    return current_user
+@router.get("/users/me")
+def get_current_user_profile(current_user: User = Depends(get_current_user)):
+    return JSONResponse(content=jsonable_encoder(current_user, exclude={"hashed_password"}))
 
 
 class PasswordChange(BaseModel):

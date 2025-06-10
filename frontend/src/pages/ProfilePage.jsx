@@ -70,7 +70,7 @@ const ProfilePage = () => {
     formData.append('avatar', file);
 
     try {
-      await axios.post('/users/profile/upload-avatar/', formData, {
+      const res = await axios.post('/users/profile/upload-avatar/', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -78,6 +78,7 @@ const ProfilePage = () => {
       });
       const avatarUrl = `${import.meta.env.VITE_API_URL || ''}${res.data.avatar_url}`;
       setAvatarPreview(avatarUrl);
+
 
       setSnack({ open: true, message: 'Avatar uploaded successfully.', severity: 'success' });
     } catch (error) {
