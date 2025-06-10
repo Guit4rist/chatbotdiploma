@@ -31,6 +31,14 @@ export const sendMessageToBot = async ({
     chat_session_id,
     language,
   };
+  
+  console.log("Sending to bot:", {
+  message,
+  user_id,
+  chat_session_id,
+  language
+});
+
 
   try {
     const res = await axios.post("/chat", payload);
