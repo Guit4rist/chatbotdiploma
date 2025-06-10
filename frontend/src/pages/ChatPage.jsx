@@ -126,22 +126,37 @@ const ChatPage = () => {
 
 
 useEffect(() => {
-  if (!user?.user_id) return;
+  // Ensure sessions are only set once
+  if (sessions.length > 0) return;
 
-  const dummySessions = [
-    { id: 's1', title: 'Ordering Food in a Restaurant' },
-    { id: 's2', title: 'Job Interview Practice' },
-    { id: 's3', title: 'Traveling Abroad' },
-  ];
+  if (user?.user_id) {
+    const dummySessions = [
+      { id: 's1', title: 'Ordering Food in a Restaurant' },
+      { id: 's2', title: 'Job Interview Practice' },
+      { id: 's3', title: 'Traveling Abroad' },
+    ];
 
-  setSessions(dummySessions);
-  setSelectedSessionId(dummySessions[0].id);
+    setSessions(dummySessions);
+    setSelectedSessionId(dummySessions[0].id);
+  } else {
+    // Temporary fallback for testing without login
+    const dummyUser = { user_id: 'demo' };
+    const dummySessions = [
+      { id: 's1', title: 'Ordering Food in a Restaurant' },
+      { id: 's2', title: 'Job Interview Practice' },
+      { id: 's3', title: 'Traveling Abroad' },
+    ];
+
+    setAuth({ isAuthenticated: true, user: dummyUser }); // optional
+    setSessions(dummySessions);
+    setSelectedSessionId(dummySessions[0].id);
+  }
 }, [user]);
 
 
 
-  useEffect(() => {
-  if (!user?.user_id || !selectedSessionId) return;
+ useEffect(() => {
+  if (!selectedSessionId) return;
 
   const dummyMessagesBySession = {
     s1: [
@@ -175,8 +190,7 @@ useEffect(() => {
   };
 
   setMessages(dummyMessagesBySession[selectedSessionId] || []);
-}, [selectedSessionId, user]);
-
+}, [selectedSessionId]);
 
   // Scroll to bottom
   useEffect(() => {
