@@ -147,7 +147,6 @@ useEffect(() => {
       { id: 's3', title: 'Traveling Abroad' },
     ];
 
-    setAuth({ isAuthenticated: true, user: dummyUser }); // optional
     setSessions(dummySessions);
     setSelectedSessionId(dummySessions[0].id);
   }
