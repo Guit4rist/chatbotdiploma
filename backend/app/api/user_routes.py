@@ -87,7 +87,7 @@ def set_language(
     db.commit()
     return {"message": "Language updated", "preferred_language": preferred_language}
 
-@router.get("/users/me")
+@router.get("/me")
 def get_current_user_profile(current_user: User = Depends(get_current_user)):
     return JSONResponse(content=jsonable_encoder(current_user, exclude={"hashed_password"}))
 
