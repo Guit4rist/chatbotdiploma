@@ -32,7 +32,7 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)):
     db.refresh(user)
     return user
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login/")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
