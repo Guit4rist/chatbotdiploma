@@ -111,8 +111,8 @@ const ChatPage = () => {
   const [newSessionTitle, setNewSessionTitle] = useState('');
   const [editingSessionId, setEditingSessionId] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
-  const [level, setLevel] = useState(1);
-  const [xp, setXp] = useState(0);
+  const [level, setLevel] = useState(3);
+  const [xp, setXp] = useState(120);
   const listRef = useRef(null);
 
   if (authLoading) {
