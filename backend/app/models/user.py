@@ -26,7 +26,6 @@ class User(Base):
     # Gamification
     experience_points = Column(Integer, default=0)
     current_level = Column(String, default="Beginner")
-    current_xp = Column(Integer, default=0)
 
     #badges = relationship("UserBadge", back_populates="user", cascade="all, delete-orphan")
 
