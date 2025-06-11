@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import FileResponse
 from app.models.user import Base 
 from app.db.database import engine
@@ -50,8 +50,21 @@ async def serve_frontend(full_path: str):
     if full_path.startswith("api/"):
         raise HTTPException(status_code=404, detail="Not found")
     
-    # Serve index.html for all other routes
-    return FileResponse("frontend/dist/index.html")
+    # Check if the file exists in the frontend dist directory
+    frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "dist")
+    file_path = os.path.join(frontend_path, full_path)
+    
+    # If the file exists, serve it
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return FileResponse(file_path)
+    
+    # Otherwise, serve index.html
+    index_path = os.path.join(frontend_path, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    
+    # If index.html doesn't exist, return a 404
+    raise HTTPException(status_code=404, detail="Frontend files not found")
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
