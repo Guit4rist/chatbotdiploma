@@ -141,19 +141,24 @@ const ChatPage = () => {
 
    // Load history when session changes
   useEffect(() => {
-  if (!user?.user_id || !selectedSessionId) return;
+    if (!user?.user_id || !selectedSessionId) return;
 
-  const loadHistory = async () => {
-    try {
-      const history = await fetchConversationHistory(user.user_id, selectedSessionId);
-      setMessages(history.map(m => ({ sender: m.role, text: m.content })));
-    } catch (error) {
-      console.error("Error loading conversation history:", error);
-    }
-  };
+    const loadHistory = async () => {
+      try {
+        const history = await fetchConversationHistory(user.user_id, selectedSessionId);
+        // Map the messages correctly based on the backend response structure
+        setMessages(history.map(m => ({
+          sender: m.role,
+          text: m.message // Changed from m.content to m.message to match backend model
+        })));
+      } catch (error) {
+        console.error("Error loading conversation history:", error);
+        setMessages([]); // Reset messages on error
+      }
+    };
 
-  loadHistory();
-}, [selectedSessionId, user]);
+    loadHistory();
+  }, [selectedSessionId, user]);
 
   // Scroll to bottom
   useEffect(() => {
