@@ -199,14 +199,14 @@ const Navbar = () => {
                 </Button>
               ))}
 
-              <Button
-                color="inherit"
-                component={Link}
-                to="/lessons"
-                sx={{ mr: 2 }}
-              >
-                Lessons
-              </Button>
+                <Button
+                  component={Link}
+                  to="/lessons"
+                  {...buttonStyle}
+                >
+                  Lessons
+                </Button>
+
 
               {isAuthenticated ? (
                 <>

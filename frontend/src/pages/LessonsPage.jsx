@@ -225,192 +225,210 @@ const LessonsPage = () => {
     );
   }
 
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Language Lessons
-      </Typography>
+  // TOP: All imports remain unchanged
+// Replace component body only
 
-      <Grid container spacing={4}>
-        {/* Lessons Section */}
-        <Grid item xs={12} md={8}>
-          {!selectedLesson ? (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                Available Lessons
-              </Typography>
-              <Grid container spacing={3}>
-                {lessons.map((lesson) => (
-                  <Grid item xs={12} sm={6} key={lesson.id}>
-                    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                      <CardContent sx={{ flexGrow: 1 }}>
-                        <Box display="flex" alignItems="center" mb={2}>
-                          {lesson.type === 'dialog' ? (
-                            <ChatIcon color="primary" sx={{ mr: 1 }} />
-                          ) : (
-                            <QuizIcon color="primary" sx={{ mr: 1 }} />
-                          )}
-                          <Typography variant="h6" component="h2">
-                            {lesson.title}
-                          </Typography>
-                        </Box>
-                        <Typography color="text.secondary" paragraph>
-                          {lesson.description}
-                        </Typography>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleStartLesson(lesson)}
-                        >
-                          Start Lesson
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </>
-          ) : (
-            <>
-              <Box display="flex" alignItems="center" mb={3}>
-                <Button
-                  variant="outlined"
-                  onClick={() => setSelectedLesson(null)}
-                  sx={{ mr: 2 }}
-                >
-                  Back to Lessons
-                </Button>
-                <Typography variant="h5">
-                  {selectedLesson.title}
-                </Typography>
-              </Box>
+return (
+  <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Typography variant="h4" fontWeight={600} gutterBottom>
+      Language Lessons
+    </Typography>
 
-              {selectedLesson.type === 'quiz' ? (
-                <Paper sx={{ p: 3 }}>
-                  {!showResult ? (
-                    <>
-                      <Typography variant="h6" gutterBottom>
-                        Question {currentQuestion + 1} of {selectedLesson.content.questions.length}
-                      </Typography>
-                      <Typography variant="body1" paragraph>
-                        {selectedLesson.content.questions[currentQuestion].question}
-                      </Typography>
-                      <FormControl component="fieldset">
-                        <RadioGroup
-                          value={selectedAnswer}
-                          onChange={(e) => setSelectedAnswer(e.target.value)}
-                        >
-                          {selectedLesson.content.questions[currentQuestion].options.map((option, index) => (
-                            <FormControlLabel
-                              key={index}
-                              value={option}
-                              control={<Radio />}
-                              label={option}
-                            />
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                      <Box mt={2}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleAnswerSubmit}
-                          disabled={!selectedAnswer}
-                        >
-                          Submit Answer
-                        </Button>
-                      </Box>
-                    </>
-                  ) : (
-                    <Box>
-                      <Alert severity={isCorrect ? "success" : "error"} sx={{ mb: 2 }}>
-                        {isCorrect ? "Correct!" : "Incorrect. Try again!"}
-                      </Alert>
+    <Grid container spacing={4}>
+      {/* Main Content Area */}
+      <Grid item xs={12} md={9}>
+        {!selectedLesson ? (
+          <>
+            <Typography variant="h5" gutterBottom>
+              Choose a Lesson
+            </Typography>
+            <Grid container spacing={3}>
+              {lessons.map((lesson) => (
+                <Grid item xs={12} sm={6} md={4} key={lesson.id}>
+                  <Card
+                    sx={{
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      p: 2,
+                      borderRadius: 3,
+                      boxShadow: 3,
+                      bgcolor: '#0c2548',
+                      color: 'white',
+                    }}
+                  >
+                    <Box display="flex" alignItems="center" mb={1}>
+                      {lesson.type === 'dialog' ? (
+                        <ChatIcon sx={{ mr: 1, color: '#90caf9' }} />
+                      ) : (
+                        <QuizIcon sx={{ mr: 1, color: '#ffcc80' }} />
+                      )}
+                      <Typography variant="h6">{lesson.title}</Typography>
+                    </Box>
+                    <Typography variant="body2" color="grey.300" mb={2}>
+                      {lesson.description}
+                    </Typography>
+                    <Box mt="auto">
                       <Button
+                        fullWidth
                         variant="contained"
-                        color="primary"
-                        onClick={handleNextQuestion}
+                        color="secondary"
+                        onClick={() => handleStartLesson(lesson)}
+                        endIcon={<SchoolIcon />}
                       >
-                        {currentQuestion < selectedLesson.content.questions.length - 1 ? "Next Question" : "Finish Quiz"}
+                        Start
                       </Button>
                     </Box>
-                  )}
-                </Paper>
-              ) : (
-                <Paper sx={{ p: 3, height: '60vh', display: 'flex', flexDirection: 'column' }}>
-                  <Box sx={{ flexGrow: 1, overflow: 'auto', mb: 2 }}>
-                    {messages.map((message, index) => (
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </>
+        ) : (
+          <>
+            <Box display="flex" alignItems="center" mb={2}>
+              <Button variant="outlined" onClick={() => setSelectedLesson(null)} sx={{ mr: 2 }}>
+                Back
+              </Button>
+              <Typography variant="h5">{selectedLesson.title}</Typography>
+            </Box>
+
+            {selectedLesson.type === 'quiz' ? (
+              <Paper sx={{ p: 3, bgcolor: '#163a61', borderRadius: 2, color: 'white' }}>
+                {!showResult ? (
+                  <>
+                    <Typography variant="subtitle1" gutterBottom>
+                      Question {currentQuestion + 1} of {selectedLesson.content.questions.length}
+                    </Typography>
+                    <Typography variant="body1" mb={2}>
+                      {selectedLesson.content.questions[currentQuestion].question}
+                    </Typography>
+                    <FormControl>
+                      <RadioGroup
+                        value={selectedAnswer}
+                        onChange={(e) => setSelectedAnswer(e.target.value)}
+                      >
+                        {selectedLesson.content.questions[currentQuestion].options.map((option, index) => (
+                          <FormControlLabel
+                            key={index}
+                            value={option}
+                            control={<Radio sx={{ color: 'white' }} />}
+                            label={<Typography color="white">{option}</Typography>}
+                          />
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <Box mt={2}>
+                      <Button
+                        variant="contained"
+                        onClick={handleAnswerSubmit}
+                        disabled={!selectedAnswer}
+                      >
+                        Submit
+                      </Button>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <Alert severity={isCorrect ? "success" : "error"} sx={{ mb: 2 }}>
+                      {isCorrect ? "Correct!" : "Incorrect. Try again!"}
+                    </Alert>
+                    <Button variant="contained" onClick={handleNextQuestion}>
+                      {currentQuestion < selectedLesson.content.questions.length - 1 ? "Next Question" : "Finish Quiz"}
+                    </Button>
+                  </>
+                )}
+              </Paper>
+            ) : (
+              <Paper sx={{ p: 3, bgcolor: '#163a61', borderRadius: 2, color: 'white' }}>
+                <Typography variant="subtitle1" mb={2}>
+                  {selectedLesson.content.scenario}
+                </Typography>
+                <Box
+                  sx={{
+                    bgcolor: '#0c2548',
+                    p: 2,
+                    borderRadius: 2,
+                    height: '300px',
+                    overflowY: 'auto',
+                    mb: 2,
+                  }}
+                >
+                  {messages.map((msg, index) => (
+                    <Box
+                      key={index}
+                      display="flex"
+                      justifyContent={msg.role === 'user' ? 'flex-end' : 'flex-start'}
+                      mb={1}
+                    >
                       <Box
-                        key={index}
                         sx={{
-                          display: 'flex',
-                          justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                          mb: 2
+                          bgcolor: msg.role === 'user' ? '#1976d2' : '#37474f',
+                          color: 'white',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 2,
+                          maxWidth: '70%',
                         }}
                       >
-                        <Paper
-                          sx={{
-                            p: 2,
-                            maxWidth: '70%',
-                            bgcolor: message.role === 'user' ? 'primary.light' : 'grey.100',
-                            color: message.role === 'user' ? 'white' : 'text.primary'
-                          }}
-                        >
-                          <Typography>{message.content}</Typography>
-                        </Paper>
+                        <Typography variant="body2">{msg.content}</Typography>
                       </Box>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      placeholder="Type your message..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleSendMessage}
-                      endIcon={<SendIcon />}
-                    >
-                      Send
-                    </Button>
-                  </Box>
-                </Paper>
-              )}
-            </>
-          )}
-        </Grid>
-
-        {/* Tips Section */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-              <LightbulbIcon color="primary" sx={{ mr: 1 }} />
-              Learning Tips
-            </Typography>
-            <List>
-              {tips.map((tip, index) => (
-                <React.Fragment key={index}>
-                  <ListItem>
-                    <ListItemIcon>
-                      <SchoolIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={tip} />
-                  </ListItem>
-                  {index < tips.length - 1 && <Divider />}
-                </React.Fragment>
-              ))}
-            </List>
-          </Paper>
-        </Grid>
+                    </Box>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </Box>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type your reply..."
+                    sx={{ bgcolor: 'white', borderRadius: 1 }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSendMessage}
+                    endIcon={<SendIcon />}
+                  >
+                    Send
+                  </Button>
+                </Box>
+                {showFeedback && (
+                  <Alert severity="info" sx={{ mt: 2 }}>
+                    Great job! You’ve reached the feedback point.
+                  </Alert>
+                )}
+              </Paper>
+            )}
+          </>
+        )}
       </Grid>
-    </Container>
-  );
+
+      {/* Sidebar Tips */}
+      <Grid item xs={12} md={3}>
+        <Paper elevation={3} sx={{ p: 2, bgcolor: '#e3f2fd' }}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <LightbulbIcon color="primary" sx={{ mr: 1 }} />
+            <Typography variant="h6">Learning Tips</Typography>
+          </Box>
+          <Divider sx={{ mb: 2 }} />
+          <List dense>
+            {tips.slice(0, 6).map((tip, index) => (
+              <ListItem key={index}>
+                <ListItemIcon>
+                  <SchoolIcon fontSize="small" color="action" />
+                </ListItemIcon>
+                <ListItemText primary={tip} />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      </Grid>
+    </Grid>
+  </Container>
+);
 };
 
 export default LessonsPage;
