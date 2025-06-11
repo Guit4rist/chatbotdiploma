@@ -23,7 +23,7 @@ import {
   Alert,
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api/axios';
+import api from '../api/axios';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import SchoolIcon from '@mui/icons-material/School';
 import QuizIcon from '@mui/icons-material/Quiz';
