@@ -23,6 +23,7 @@ import {
   Alert,
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import SchoolIcon from '@mui/icons-material/School';
@@ -34,6 +35,7 @@ const LessonsPage = () => {
   const [lessons, setLessons] = useState([]);
   const [tips, setTips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
@@ -44,9 +46,15 @@ const LessonsPage = () => {
   const [messageCount, setMessageCount] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const messagesEndRef = useRef(null);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const [lessonsResponse, tipsResponse] = await Promise.all([
@@ -55,15 +63,17 @@ const LessonsPage = () => {
         ]);
         setLessons(lessonsResponse.data);
         setTips(tipsResponse.data.tips);
+        setError(null);
       } catch (error) {
         console.error('Error fetching lessons data:', error);
+        setError('Failed to load lessons. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     if (selectedLesson?.type === 'dialog') {
@@ -161,6 +171,19 @@ const LessonsPage = () => {
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button variant="contained" onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </Container>
     );
   }
 

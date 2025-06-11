@@ -37,7 +37,10 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # Allow CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://languagechatbot.onrender.com"],  # Specify exact origin
+    allow_origins=[
+        "https://languagechatbot.onrender.com",
+        "https://chatbotdiploma.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
