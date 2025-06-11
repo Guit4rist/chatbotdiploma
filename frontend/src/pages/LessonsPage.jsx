@@ -46,11 +46,11 @@ const LessonsPage = () => {
   const [messageCount, setMessageCount] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const messagesEndRef = useRef(null);
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !token) {
       navigate('/login');
       return;
     }
@@ -66,14 +66,18 @@ const LessonsPage = () => {
         setError(null);
       } catch (error) {
         console.error('Error fetching lessons data:', error);
-        setError('Failed to load lessons. Please try again later.');
+        if (error.response?.status === 401) {
+          navigate('/login');
+        } else {
+          setError('Failed to load lessons. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, token, navigate]);
 
   useEffect(() => {
     if (selectedLesson?.type === 'dialog') {
