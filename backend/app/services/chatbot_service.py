@@ -18,7 +18,7 @@ def get_db_session():
     finally:
         db.close()
 
-async def get_chatbot_response(message: str, user_id: int, language: str = "English") -> str:
+async def get_chatbot_response(message: str, user_id: int, chat_session_id: int, language: str = "English") -> str:
     try:
         system_prompt = (
             f"You are a helpful language learning assistant. "
@@ -26,7 +26,7 @@ async def get_chatbot_response(message: str, user_id: int, language: str = "Engl
         )
         with get_db_session() as db:
             # Save user's message
-            save_message(db, user_id, "user", message)
+            save_message(db, user_id, "user", message, chat_session_id)
 
             response = await client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -38,7 +38,7 @@ async def get_chatbot_response(message: str, user_id: int, language: str = "Engl
             bot_message = response.choices[0].message.content.strip()
 
             # Save bot's response
-            save_message(db, user_id, "assistant", bot_message)
+            save_message(db, user_id, "assistant", bot_message, chat_session_id)
 
             return bot_message
     except Exception as e:

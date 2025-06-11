@@ -92,11 +92,6 @@ const TypingIndicator = () => {
 
 const ChatPage = () => {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  console.log("AuthContext values:", {
-  isAuthenticated,
-  authLoading,
-  user,
-});
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -295,21 +290,16 @@ const ChatPage = () => {
   };
 
   const handleCreateSession = async () => {
-  if (!newSessionTitle.trim()) return;
-  try {
-    const response = await axios.post('/chat_sessions/', {
-      title: newSessionTitle.trim(),
-      user_id: user.user_id,
-    });
-    const newSession = response.data;
-    setSessions((prev) => [...prev, newSession]);
-    setSelectedSessionId(newSession.id);
-    setNewSessionTitle('');
-    setCreating(false);
-  } catch (err) {
-    console.error('Failed to create session:', err);
-  }
-};
+    try {
+      const newSession = await createChatSession(user.user_id, newSessionTitle);
+      setSessions(prev => [...prev, newSession]);
+      setSelectedSessionId(newSession.id);
+      setCreating(false);
+      setNewSessionTitle('');
+    } catch (error) {
+      console.error("Error creating chat session:", error);
+    }
+  };
 
 
 const handleRenameSession = async (sessionId) => {
@@ -604,7 +594,14 @@ const handleDeleteSession = async (sessionId) => {
       </Grid>
 
       {/* New Session Dialog */}
-      <Dialog open={creating} onClose={() => setCreating(false)}>
+      <Dialog 
+        open={creating} 
+        onClose={() => {
+          setCreating(false);
+          setNewSessionTitle('');
+        }}
+        disableEnforceFocus
+      >
         <DialogTitle>Create New Session</DialogTitle>
         <DialogContent>
           <TextField
@@ -613,17 +610,24 @@ const handleDeleteSession = async (sessionId) => {
             value={newSessionTitle}
             onChange={(e) => setNewSessionTitle(e.target.value)}
             autoFocus
+            margin="dense"
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreating(false)}>Cancel</Button>
+          <Button 
+            onClick={() => {
+              setCreating(false);
+              setNewSessionTitle('');
+            }}
+          >
+            Cancel
+          </Button>
           <Button
-              disabled={!newSessionTitle.trim()}
-              onClick={handleCreateSession}
-            >
-              Create
-            </Button>
-
+            disabled={!newSessionTitle.trim()}
+            onClick={handleCreateSession}
+          >
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>

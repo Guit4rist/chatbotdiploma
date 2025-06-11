@@ -38,7 +38,7 @@ async def chat_with_bot(request: Request, data: MessageRequest, db: Session = De
         db.commit()
 
     save_message(db, data.user_id, "user", data.message, data.chat_session_id)
-    bot_response = await get_chatbot_response(data.message, data.user_id)
+    bot_response = await get_chatbot_response(data.message, data.user_id, data.chat_session_id, data.language)
     save_message(db, data.user_id, "assistant", bot_response, data.chat_session_id)
 
     xp_earned = handle_user_xp_and_level_up(user, len(data.message), db)
