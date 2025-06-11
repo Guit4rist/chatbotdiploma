@@ -100,7 +100,10 @@ const SettingsPage = () => {
       if (password.trim() !== '') {
         await axios.post(
           `/users/${user.id}/change-password`,
-          { new_password: password },
+          { 
+            current_password: user.current_password,
+            new_password: password 
+          },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
           }

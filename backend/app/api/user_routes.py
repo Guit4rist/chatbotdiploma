@@ -6,6 +6,7 @@ from app.db.dependencies import get_db
 from app.models.user import User
 from app.services.auth import get_current_user, hash_password
 from app.schemas.user import UserCreate, UserUpdate, UserOut
+from pydantic import BaseModel
 import shutil
 import os
 from datetime import datetime
@@ -84,29 +85,13 @@ def set_language(
     db.commit()
     return {"message": "Language updated", "preferred_language": preferred_language}
 
-@router.get("/me", response_model=UserOut)
-async def get_current_user_info(current_user: User = Depends(get_current_user)):
-    return current_user
-
-
 class PasswordChange(BaseModel):
     current_password: str
     new_password: str
 
-@router.post("/profile/change-password/")
-def change_password(
-    data: PasswordChange,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    from app.services.auth import verify_password
-
-    if not verify_password(data.current_password, current_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect current password")
-
-    current_user.hashed_password = hash_password(data.new_password)
-    db.commit()
-    return {"message": "Password updated successfully"}
+@router.get("/me", response_model=UserOut)
+async def get_current_user_info(current_user: User = Depends(get_current_user)):
+    return current_user
 
 @router.put("/{user_id}/profile")
 async def update_profile(
@@ -134,7 +119,7 @@ async def update_profile(
 @router.post("/{user_id}/change-password")
 async def change_password(
     user_id: int,
-    password_data: dict = Body(...),
+    password_data: PasswordChange,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -146,7 +131,7 @@ async def change_password(
         raise HTTPException(status_code=404, detail="User not found")
     
     # Hash and update password
-    user.hashed_password = hash_password(password_data["new_password"])
+    user.hashed_password = hash_password(password_data.new_password)
     db.commit()
     return {"message": "Password changed successfully"}
 
