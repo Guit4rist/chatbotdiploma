@@ -199,6 +199,15 @@ const Navbar = () => {
                 </Button>
               ))}
 
+              <Button
+                color="inherit"
+                component={Link}
+                to="/lessons"
+                sx={{ mr: 2 }}
+              >
+                Lessons
+              </Button>
+
               {isAuthenticated ? (
                 <>
                   <Tooltip title="Account settings">

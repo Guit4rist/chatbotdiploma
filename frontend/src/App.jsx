@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Register from './pages/RegisterPage';
 import { ParallaxProvider } from 'react-scroll-parallax';
 import { useAuth } from './context/AuthContext';
+import LessonsPage from './pages/LessonsPage';
 
 function App() {
   const { user, isAuthenticated, loading } = useAuth(); // 👈 get loading state
@@ -58,6 +59,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/lessons" element={<LessonsPage />} />
           </Routes>
         </main>
       </>
