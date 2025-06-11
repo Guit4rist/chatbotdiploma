@@ -408,23 +408,37 @@ return (
 
       {/* Sidebar Tips */}
       <Grid item xs={12} md={3}>
-        <Paper elevation={3} sx={{ p: 2, bgcolor: '#e3f2fd' }}>
-          <Box display="flex" alignItems="center" mb={1}>
-            <LightbulbIcon color="primary" sx={{ mr: 1 }} />
-            <Typography variant="h6">Learning Tips</Typography>
-          </Box>
-          <Divider sx={{ mb: 2 }} />
-          <List dense>
-            {tips.slice(0, 6).map((tip, index) => (
-              <ListItem key={index}>
-                <ListItemIcon>
-                  <SchoolIcon fontSize="small" color="action" />
-                </ListItemIcon>
-                <ListItemText primary={tip} />
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          bgcolor: '#0c2548', // Dark blue background
+          color: 'white',
+          borderRadius: 2,
+        }}
+      >
+        <Box display="flex" alignItems="center" mb={1}>
+          <LightbulbIcon sx={{ color: '#fdd835', mr: 1 }} /> {/* Bright yellow bulb */}
+          <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+            Learning Tips
+          </Typography>
+        </Box>
+        <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.2)', mb: 2 }} />
+        <List dense>
+          {tips.slice(0, 6).map((tip, index) => (
+            <ListItem key={index} sx={{ color: 'white' }}>
+              <ListItemIcon>
+                <SchoolIcon sx={{ color: '#90caf9' }} /> {/* Light blue icon */}
+              </ListItemIcon>
+              <ListItemText
+                primary={tip}
+                primaryTypographyProps={{ sx: { color: 'white' } }}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+
       </Grid>
     </Grid>
   </Container>
