@@ -18,8 +18,8 @@ limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(title="Language Learning Platform with Chatbot")
 
-# Include API router
-app.include_router(router)
+# Include API router with prefix
+app.include_router(router, prefix="/api")
 app.state.limiter = limiter
 
 # Serve static files
@@ -43,28 +43,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve frontend static files
-@app.get("/{full_path:path}")
-async def serve_frontend(full_path: str):
-    # If the path starts with /api, let the API router handle it
-    if full_path.startswith("api/"):
-        raise HTTPException(status_code=404, detail="Not found")
-    
-    # Check if the file exists in the frontend dist directory
-    frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "dist")
-    file_path = os.path.join(frontend_path, full_path)
-    
-    # If the file exists, serve it
-    if os.path.exists(file_path) and os.path.isfile(file_path):
-        return FileResponse(file_path)
-    
-    # Otherwise, serve index.html
-    index_path = os.path.join(frontend_path, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    
-    # If index.html doesn't exist, return a 404
-    raise HTTPException(status_code=404, detail="Frontend files not found")
+# Mount the frontend static files
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "dist")
+app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
