@@ -40,6 +40,7 @@ const LoginPage = () => {
       const token = response.data.access_token;
       const user = {
         username: form.username,
+        id: response.data.user_id,
         // optionally include more user info from response if available
       };
 

@@ -174,9 +174,18 @@ const ChatPage = () => {
     setLoading(true);
 
     try {
+      // If no session is selected, create a new one
+      let sessionId = selectedSessionId;
+      if (!sessionId) {
+        const newSession = await createChatSession(user.user_id, "New Chat");
+        sessionId = newSession.id;
+        setSelectedSessionId(sessionId);
+        setSessions(prev => [...prev, newSession]);
+      }
+
       const { response, xp_earned, current_level } = await sendMessageToBot({
         user_id: user.user_id,
-        chat_session_id: selectedSessionId,
+        chat_session_id: sessionId,
         message: msg,
         language: user.language || "English",
       });

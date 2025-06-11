@@ -47,8 +47,13 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token, user) => {
     localStorage.setItem('accessToken', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    setAuth({ isAuthenticated: true, token, user });
+    // Make sure user object has user_id
+    const userWithId = {
+      ...user,
+      user_id: user.id || user.user_id // Handle both formats
+    };
+    localStorage.setItem('user', JSON.stringify(userWithId));
+    setAuth({ isAuthenticated: true, token, user: userWithId });
   };
 
   const logout = () => {
