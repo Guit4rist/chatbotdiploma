@@ -86,6 +86,10 @@ const SettingsPage = () => {
           preferred_language: preferredLanguage,
           language_level: languageLevel,
           email: email,
+          interface_language: user.interface_language,
+          timezone: user.timezone,
+          bio: user.bio,
+          display_name: user.display_name
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },

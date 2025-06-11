@@ -4,11 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Body
 from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate, UserOut, UserResponse
-from app.services.auth import hash_password as get_password_hash, get_current_user
-from pydantic import BaseModel
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from app.services.auth import get_current_user, get_password_hash
+from app.schemas.user import UserCreate, UserUpdate, UserOut
 import shutil
 import os
 from datetime import datetime
@@ -87,23 +84,9 @@ def set_language(
     db.commit()
     return {"message": "Language updated", "preferred_language": preferred_language}
 
-@router.get("/me")
+@router.get("/me", response_model=UserOut)
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
-    return {
-        "id": current_user.id,
-        "username": current_user.username,
-        "email": current_user.email,
-        "preferred_language": current_user.preferred_language,
-        "language_level": current_user.language_level,
-        "current_level": current_user.current_level,
-        "experience_points": current_user.experience_points,
-        "avatar_url": current_user.avatar_url,
-        "bio": current_user.bio,
-        "interface_language": current_user.interface_language,
-        "timezone": current_user.timezone,
-        "total_sessions": current_user.total_sessions,
-        "total_messages": current_user.total_messages
-    }
+    return current_user
 
 
 class PasswordChange(BaseModel):
@@ -128,7 +111,7 @@ def change_password(
 @router.put("/{user_id}/profile")
 async def update_profile(
     user_id: int,
-    profile_data: dict = Body(...),
+    update: UserUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -140,7 +123,8 @@ async def update_profile(
         raise HTTPException(status_code=404, detail="User not found")
     
     # Update user fields
-    for field, value in profile_data.items():
+    update_data = update.dict(exclude_unset=True)
+    for field, value in update_data.items():
         if hasattr(user, field):
             setattr(user, field, value)
     
