@@ -7,8 +7,15 @@ PROJECT_ROOT=$(pwd)
 cd "$PROJECT_ROOT/frontend"
 echo "Installing frontend dependencies..."
 npm install
+
 echo "Building frontend..."
 npm run build
+
+# Verify the build
+if [ ! -d "dist" ]; then
+    echo "Error: Frontend build failed - dist directory not found"
+    exit 1
+fi
 
 # Start the backend server
 cd "$PROJECT_ROOT/backend"

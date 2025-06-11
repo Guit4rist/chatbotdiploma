@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from app.models.user import Base 
 from app.db.database import engine
 from app.api.router import router
@@ -43,9 +43,52 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount the frontend static files
+# Serve frontend static files if they exist
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "dist")
-app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+else:
+    # If frontend files don't exist, serve a simple HTML response
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="Not found")
+        return HTMLResponse("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Language Learning Platform</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    background-color: #0d1b2a;
+                    color: #E0E1DD;
+                }
+                .container {
+                    text-align: center;
+                    padding: 2rem;
+                    background-color: #1B263B;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                h1 { margin-bottom: 1rem; }
+                p { margin-bottom: 0.5rem; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Language Learning Platform</h1>
+                <p>The frontend application is currently being built.</p>
+                <p>Please try again in a few moments.</p>
+            </div>
+        </body>
+        </html>
+        """)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
