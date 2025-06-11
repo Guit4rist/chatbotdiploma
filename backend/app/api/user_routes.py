@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Body
 from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 from app.models.user import User
-from app.services.auth import get_current_user, get_password_hash
+from app.services.auth import get_current_user, hash_password
 from app.schemas.user import UserCreate, UserUpdate, UserOut
 import shutil
 import os
@@ -22,7 +22,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         username=user.username,
         email=user.email,
-        hashed_password=get_password_hash(user.password),
+        hashed_password=hash_password(user.password),
         preferred_language=user.preferred_language,
         language_level=user.language_level,
         display_name=user.display_name,
@@ -46,7 +46,7 @@ def update_user(user_id: int, update: UserUpdate, db: Session = Depends(get_db))
     update_data = update.dict(exclude_unset=True)
 
     if "password" in update_data:
-        user.hashed_password = get_password_hash(update_data.pop("password"))
+        user.hashed_password = hash_password(update_data.pop("password"))
 
     for field, value in update_data.items():
         setattr(user, field, value)
@@ -104,7 +104,7 @@ def change_password(
     if not verify_password(data.current_password, current_user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect current password")
 
-    current_user.hashed_password = get_password_hash(data.new_password)
+    current_user.hashed_password = hash_password(data.new_password)
     db.commit()
     return {"message": "Password updated successfully"}
 
@@ -146,7 +146,7 @@ async def change_password(
         raise HTTPException(status_code=404, detail="User not found")
     
     # Hash and update password
-    user.hashed_password = get_password_hash(password_data["new_password"])
+    user.hashed_password = hash_password(password_data["new_password"])
     db.commit()
     return {"message": "Password changed successfully"}
 
