@@ -24,12 +24,102 @@ import {
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import SchoolIcon from '@mui/icons-material/School';
 import QuizIcon from '@mui/icons-material/Quiz';
 import ChatIcon from '@mui/icons-material/Chat';
 import SendIcon from '@mui/icons-material/Send';
+
+// Demo data for lessons
+const DEMO_LESSONS = [
+  {
+    id: 1,
+    title: "Coffee Shop Conversation",
+    description: "Practice ordering coffee and having a casual conversation at a coffee shop",
+    type: "dialog",
+    content: {
+      scenario: "You're at a coffee shop. The barista greets you.",
+      bot_role: "barista",
+      initial_message: "Hi there! Welcome to our coffee shop. What can I get for you today?",
+      feedback_after_messages: 5
+    }
+  },
+  {
+    id: 2,
+    title: "Basic Grammar Quiz",
+    description: "Test your knowledge of basic grammar rules",
+    type: "quiz",
+    content: {
+      questions: [
+        {
+          id: 1,
+          question: "Which sentence is grammatically correct?",
+          options: [
+            "I am going to the store yesterday",
+            "I went to the store yesterday",
+            "I going to the store yesterday",
+            "I goes to the store yesterday"
+          ],
+          correct_answer: "I went to the store yesterday"
+        },
+        {
+          id: 2,
+          question: "Choose the correct article: ___ apple is red.",
+          options: ["a", "an", "the", "none"],
+          correct_answer: "an"
+        },
+        {
+          id: 3,
+          question: "Which is the correct past tense of 'go'?",
+          options: ["goed", "went", "gone", "going"],
+          correct_answer: "went"
+        }
+      ]
+    }
+  },
+  {
+    id: 3,
+    title: "Vocabulary Quiz",
+    description: "Test your knowledge of common vocabulary",
+    type: "quiz",
+    content: {
+      questions: [
+        {
+          id: 1,
+          question: "What is the opposite of 'hot'?",
+          options: ["warm", "cold", "cool", "freezing"],
+          correct_answer: "cold"
+        },
+        {
+          id: 2,
+          question: "Which word means 'very happy'?",
+          options: ["sad", "angry", "delighted", "tired"],
+          correct_answer: "delighted"
+        },
+        {
+          id: 3,
+          question: "What is a synonym for 'big'?",
+          options: ["small", "tiny", "huge", "little"],
+          correct_answer: "huge"
+        }
+      ]
+    }
+  }
+];
+
+// Demo data for learning tips
+const DEMO_TIPS = [
+  "Practice speaking every day, even if it's just for a few minutes",
+  "Watch movies and TV shows in the language you're learning",
+  "Use language learning apps to build vocabulary",
+  "Find a language exchange partner to practice with",
+  "Read books and articles in the target language",
+  "Listen to podcasts and music in the language",
+  "Keep a vocabulary notebook",
+  "Set specific, achievable goals",
+  "Don't be afraid to make mistakes",
+  "Immerse yourself in the language as much as possible"
+];
 
 const LessonsPage = () => {
   const [lessons, setLessons] = useState([]);
@@ -46,38 +136,15 @@ const LessonsPage = () => {
   const [messageCount, setMessageCount] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const messagesEndRef = useRef(null);
-  const { user, isAuthenticated, token } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
-      navigate('/login');
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        const [lessonsResponse, tipsResponse] = await Promise.all([
-          api.get('/lessons'),
-          api.get('/lessons/tips')
-        ]);
-        setLessons(lessonsResponse.data);
-        setTips(tipsResponse.data.tips);
-        setError(null);
-      } catch (error) {
-        console.error('Error fetching lessons data:', error);
-        if (error.response?.status === 401) {
-          navigate('/login');
-        } else {
-          setError('Failed to load lessons. Please try again later.');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [isAuthenticated, token, navigate]);
+    // Use demo data instead of API calls
+    setLessons(DEMO_LESSONS);
+    setTips(DEMO_TIPS);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     if (selectedLesson?.type === 'dialog') {
@@ -105,22 +172,13 @@ const LessonsPage = () => {
     setShowResult(false);
   };
 
-  const handleAnswerSubmit = async () => {
+  const handleAnswerSubmit = () => {
     if (!selectedAnswer) return;
 
-    try {
-      const response = await api.post('/lessons/quiz/check', {
-        lesson_id: selectedLesson.id,
-        question_id: selectedLesson.content.questions[currentQuestion].id,
-        answer: selectedAnswer,
-        user_id: user.id
-      });
-
-      setIsCorrect(response.data.is_correct);
-      setShowResult(true);
-    } catch (error) {
-      console.error('Error checking answer:', error);
-    }
+    const question = selectedLesson.content.questions[currentQuestion];
+    const isAnswerCorrect = selectedAnswer === question.correct_answer;
+    setIsCorrect(isAnswerCorrect);
+    setShowResult(true);
   };
 
   const handleNextQuestion = () => {
@@ -133,7 +191,7 @@ const LessonsPage = () => {
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!newMessage.trim()) return;
 
     const userMessage = {
@@ -145,29 +203,18 @@ const LessonsPage = () => {
     setNewMessage('');
     setMessageCount(prev => prev + 1);
 
-    try {
-      const response = await api.post('/chat/send', {
-        message: newMessage,
-        user_id: user.id,
-        chat_session_id: null,
-        language: user.preferred_language,
-        conversation_style: 'formal'
-      });
-
+    // Simulate bot response
+    setTimeout(() => {
       const botMessage = {
         role: 'bot',
-        content: response.data.bot_response
+        content: "That's a great response! Let's continue the conversation."
       };
-
       setMessages(prev => [...prev, botMessage]);
 
-      // Check if we should show feedback
       if (messageCount + 1 >= selectedLesson.content.feedback_after_messages) {
         setShowFeedback(true);
       }
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
+    }, 1000);
   };
 
   if (loading) {
@@ -175,19 +222,6 @@ const LessonsPage = () => {
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
         <CircularProgress />
       </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-        <Button variant="contained" onClick={() => window.location.reload()}>
-          Retry
-        </Button>
-      </Container>
     );
   }
 
@@ -223,168 +257,142 @@ const LessonsPage = () => {
                         <Typography color="text.secondary" paragraph>
                           {lesson.description}
                         </Typography>
-                        {lesson.type === 'dialog' && (
-                          <Typography variant="body2" color="text.secondary">
-                            Scenario: {lesson.content.scenario}
-                          </Typography>
-                        )}
-                      </CardContent>
-                      <CardActions>
                         <Button
-                          size="small"
+                          variant="contained"
                           color="primary"
                           onClick={() => handleStartLesson(lesson)}
                         >
-                          Start {lesson.type === 'dialog' ? 'Conversation' : 'Quiz'}
+                          Start Lesson
                         </Button>
-                      </CardActions>
+                      </CardContent>
                     </Card>
                   </Grid>
                 ))}
               </Grid>
             </>
           ) : (
-            <Card>
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
+            <>
+              <Box display="flex" alignItems="center" mb={3}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setSelectedLesson(null)}
+                  sx={{ mr: 2 }}
+                >
+                  Back to Lessons
+                </Button>
+                <Typography variant="h5">
                   {selectedLesson.title}
                 </Typography>
+              </Box>
 
-                {selectedLesson.type === 'quiz' ? (
-                  <>
-                    <Typography variant="h6" gutterBottom>
-                      Question {currentQuestion + 1} of {selectedLesson.content.questions.length}
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                      {selectedLesson.content.questions[currentQuestion].question}
-                    </Typography>
-
-                    <FormControl component="fieldset">
-                      <FormLabel component="legend">Select your answer:</FormLabel>
-                      <RadioGroup
-                        value={selectedAnswer}
-                        onChange={(e) => setSelectedAnswer(e.target.value)}
-                      >
-                        {selectedLesson.content.questions[currentQuestion].options.map((option, index) => (
-                          <FormControlLabel
-                            key={index}
-                            value={option}
-                            control={<Radio />}
-                            label={option}
-                            disabled={showResult}
-                          />
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-
-                    {showResult && (
-                      <Alert
-                        severity={isCorrect ? "success" : "error"}
-                        sx={{ mt: 2 }}
-                      >
-                        {isCorrect
-                          ? 'Correct! Well done!'
-                          : `Incorrect. The correct answer is: ${selectedLesson.content.questions[currentQuestion].correct_answer}`}
-                      </Alert>
-                    )}
-
-                    <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-                      {!showResult ? (
+              {selectedLesson.type === 'quiz' ? (
+                <Paper sx={{ p: 3 }}>
+                  {!showResult ? (
+                    <>
+                      <Typography variant="h6" gutterBottom>
+                        Question {currentQuestion + 1} of {selectedLesson.content.questions.length}
+                      </Typography>
+                      <Typography variant="body1" paragraph>
+                        {selectedLesson.content.questions[currentQuestion].question}
+                      </Typography>
+                      <FormControl component="fieldset">
+                        <RadioGroup
+                          value={selectedAnswer}
+                          onChange={(e) => setSelectedAnswer(e.target.value)}
+                        >
+                          {selectedLesson.content.questions[currentQuestion].options.map((option, index) => (
+                            <FormControlLabel
+                              key={index}
+                              value={option}
+                              control={<Radio />}
+                              label={option}
+                            />
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                      <Box mt={2}>
                         <Button
                           variant="contained"
+                          color="primary"
                           onClick={handleAnswerSubmit}
                           disabled={!selectedAnswer}
                         >
                           Submit Answer
                         </Button>
-                      ) : (
-                        <Button variant="contained" onClick={handleNextQuestion}>
-                          {currentQuestion < selectedLesson.content.questions.length - 1
-                            ? 'Next Question'
-                            : 'Finish Quiz'}
-                        </Button>
-                      )}
-                    </Box>
-                  </>
-                ) : (
-                  <>
-                    <Typography variant="body1" paragraph>
-                      {selectedLesson.content.scenario}
-                    </Typography>
-
-                    <Paper
-                      sx={{
-                        height: '400px',
-                        overflow: 'auto',
-                        mb: 2,
-                        p: 2,
-                        bgcolor: 'grey.50'
-                      }}
-                    >
-                      {messages.map((message, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            display: 'flex',
-                            justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                            mb: 2
-                          }}
-                        >
-                          <Paper
-                            sx={{
-                              p: 2,
-                              maxWidth: '70%',
-                              bgcolor: message.role === 'user' ? 'primary.light' : 'grey.200'
-                            }}
-                          >
-                            <Typography>{message.content}</Typography>
-                          </Paper>
-                        </Box>
-                      ))}
-                      <div ref={messagesEndRef} />
-                    </Paper>
-
-                    {showFeedback && (
-                      <Alert severity="info" sx={{ mb: 2 }}>
-                        You've completed {selectedLesson.content.feedback_after_messages} messages! 
-                        Would you like to get feedback on your conversation?
+                      </Box>
+                    </>
+                  ) : (
+                    <Box>
+                      <Alert severity={isCorrect ? "success" : "error"} sx={{ mb: 2 }}>
+                        {isCorrect ? "Correct!" : "Incorrect. Try again!"}
                       </Alert>
-                    )}
-
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <TextField
-                        fullWidth
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type your message..."
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSendMessage();
-                          }
-                        }}
-                      />
                       <Button
                         variant="contained"
-                        onClick={handleSendMessage}
-                        endIcon={<SendIcon />}
+                        color="primary"
+                        onClick={handleNextQuestion}
                       >
-                        Send
+                        {currentQuestion < selectedLesson.content.questions.length - 1 ? "Next Question" : "Finish Quiz"}
                       </Button>
                     </Box>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </Paper>
+              ) : (
+                <Paper sx={{ p: 3, height: '60vh', display: 'flex', flexDirection: 'column' }}>
+                  <Box sx={{ flexGrow: 1, overflow: 'auto', mb: 2 }}>
+                    {messages.map((message, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                          mb: 2
+                        }}
+                      >
+                        <Paper
+                          sx={{
+                            p: 2,
+                            maxWidth: '70%',
+                            bgcolor: message.role === 'user' ? 'primary.light' : 'grey.100',
+                            color: message.role === 'user' ? 'white' : 'text.primary'
+                          }}
+                        >
+                          <Typography>{message.content}</Typography>
+                        </Paper>
+                      </Box>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      placeholder="Type your message..."
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSendMessage}
+                      endIcon={<SendIcon />}
+                    >
+                      Send
+                    </Button>
+                  </Box>
+                </Paper>
+              )}
+            </>
           )}
         </Grid>
 
-        {/* Learning Tips Section */}
+        {/* Tips Section */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, height: '100%' }}>
-            <Box display="flex" alignItems="center" mb={2}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
               <LightbulbIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h5">Learning Tips</Typography>
-            </Box>
+              Learning Tips
+            </Typography>
             <List>
               {tips.map((tip, index) => (
                 <React.Fragment key={index}>
